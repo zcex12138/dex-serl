@@ -25,7 +25,7 @@ from serl_launcher.agents.continuous.sac import SACAgent
 from serl_launcher.common.evaluation import evaluate
 from serl_launcher.utils.timer_utils import Timer
 
-import franka_sim # register envs
+import franka_sim
 
 FLAGS = flags.FLAGS
 
