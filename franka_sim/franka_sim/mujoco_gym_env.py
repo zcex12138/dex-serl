@@ -3,6 +3,9 @@ from pathlib import Path
 from typing import Literal, Optional
 
 import gym
+import gym.envs
+import gym.envs.mujoco
+import gym.envs.mujoco.mujoco_env
 import mujoco
 import numpy as np
 
@@ -74,6 +77,47 @@ class MujocoGymEnv(gym.Env):
     @property
     def physics_dt(self) -> float:
         return self._model.opt.timestep
+
+    @property
+    def random_state(self) -> np.random.RandomState:
+        return self._random
+
+class MujocoGymEnv_v2(gym.envs.mujoco.mujoco_env.MujocoEnv):
+    """MujocoEnv with gym interface."""
+
+    def __init__(
+        self,
+        xml_path: Path,
+        seed: int = 0,
+        control_dt: float = 0.02,
+        physics_dt: float = 0.002,
+        time_limit: float = float("inf"),
+        render_spec: GymRenderingSpec = GymRenderingSpec(),
+    ):
+        super().__init__(xml_path.as_posix(), 
+                         frame_skip=int(control_dt // physics_dt), 
+                         observation_space=None, 
+                         render_mode=render_spec.mode
+                        )
+        self.model.vis.global_.offwidth = render_spec.width
+        self.model.vis.global_.offheight = render_spec.height
+        self.model.opt.timestep = physics_dt
+        self._control_dt = control_dt
+        self._time_limit = time_limit
+        self._random = np.random.RandomState(seed)
+        self._render_specs = render_spec
+
+    def time_limit_exceeded(self) -> bool:
+        return self.data.time >= self._time_limit
+
+    # Accessors.
+    @property
+    def control_dt(self) -> float:
+        return self._control_dt
+
+    @property
+    def physics_dt(self) -> float:
+        return self.model.opt.timestep
 
     @property
     def random_state(self) -> np.random.RandomState:

@@ -21,6 +21,7 @@ from serl_launcher.utils.launcher import (
 )
 
 from gym.wrappers.record_episode_statistics import RecordEpisodeStatistics
+from serl_launcher.wrappers.fix6dpose import Fix6DPoseWrapper
 from serl_launcher.agents.continuous.sac import SACAgent
 from serl_launcher.common.evaluation import evaluate
 from serl_launcher.utils.timer_utils import Timer
@@ -38,8 +39,8 @@ flags.DEFINE_bool("save_model", False, "Whether to save model.")
 flags.DEFINE_integer("batch_size", 256, "Batch size.")
 flags.DEFINE_integer("critic_actor_ratio", 8, "critic to actor update ratio.")
 
-flags.DEFINE_integer("max_steps", 1000000, "Maximum number of training steps.")
-flags.DEFINE_integer("replay_buffer_capacity", 1000000, "Replay buffer capacity.")
+flags.DEFINE_integer("max_steps", 500000, "Maximum number of training steps.")
+flags.DEFINE_integer("replay_buffer_capacity", 500000, "Replay buffer capacity.")
 
 flags.DEFINE_integer("random_steps", 300, "Sample random actions for this many steps.")
 flags.DEFINE_integer("training_starts", 300, "Training starts after this step.")
@@ -52,11 +53,14 @@ flags.DEFINE_integer("eval_n_trajs", 5, "Number of trajectories for evaluation."
 # flag to indicate if this is a leaner or a actor
 flags.DEFINE_boolean("learner", False, "Is this a learner or a trainer.")
 flags.DEFINE_boolean("actor", False, "Is this a learner or a trainer.")
+flags.DEFINE_boolean("player", False, "Create a player.")
 flags.DEFINE_boolean("render", False, "Render the environment.")
 flags.DEFINE_string("ip", "localhost", "IP address of the learner.")
 flags.DEFINE_integer("checkpoint_period", 0, "Period to save checkpoints.")
 flags.DEFINE_string("checkpoint_path", None, "Path to save checkpoints.")
 flags.DEFINE_integer("utd_ratio", 1, "UTD ratio for SAC.")
+
+flags.DEFINE_integer("eval_n_trajs", 5, "Number of trajectories for evaluation.")
 
 flags.DEFINE_boolean(
     "debug", False, "Debug mode."
@@ -93,8 +97,10 @@ def actor(agent: SACAgent, data_store, env, sampling_rng):
     client.recv_network_callback(update_params)
 
     eval_env = gym.make(FLAGS.env)
-    if FLAGS.env == "PandaPickCube-v0":
-        eval_env = gym.wrappers.FlattenObservation(eval_env)
+    if FLAGS.env == "DphandPickCube-v0":
+        eval_env = gym.wrappers.FlattenObservation(
+            Fix6DPoseWrapper(eval_env, pose=[0, 0, 0.3, -1.5707, 1.5707, 0])
+        )
     eval_env = RecordEpisodeStatistics(eval_env)
 
     obs, _ = env.reset()
@@ -248,7 +254,45 @@ def learner(rng, agent: SACAgent, replay_buffer, replay_iterator):
         pbar.update(len(replay_buffer) - pbar.n)  # update replay buffer bar
         update_steps += 1
 
+def player(agent: SACAgent, data_store, env, sampling_rng):
+    """
+    This is the actor loop, which runs when "--actor" is set to True.
+    """
+    success_counter = 0
+    time_list = []
 
+    ckpt = checkpoints.restore_checkpoint(
+        FLAGS.checkpoint_path, target=None, step=None
+    )
+
+    agent = agent.replace(state=ckpt)
+    for episode in range(FLAGS.eval_n_trajs):
+        obs, _ = env.reset()
+        done = False
+        start_time = time.time()
+        while not done:
+            actions = agent.sample_actions(
+                observations=jax.device_put(obs),
+                argmax=True,
+            )
+            actions = np.asarray(jax.device_get(actions))
+
+            next_obs, reward, done, truncated, info = env.step(actions)
+            obs = next_obs
+
+            if done:
+                if reward:
+                    dt = time.time() - start_time
+                    time_list.append(dt)
+                    print(dt)
+
+                success_counter += reward
+                print(reward)
+                print(f"{success_counter}/{episode + 1}")
+
+    print(f"success rate: {success_counter / FLAGS.eval_n_trajs}")
+    print(f"average time: {np.mean(time_list)}")
+    return  # after done eval, return and exit
 ##############################################################################
 
 
@@ -266,9 +310,10 @@ def main(_):
         env = gym.make(FLAGS.env, render_mode="human")
     else:
         env = gym.make(FLAGS.env)
-
-    if FLAGS.env == "PandaPickCube-v0":
-        env = gym.wrappers.FlattenObservation(env)
+    if FLAGS.env == "DphandPickCube-v0":
+        env = gym.wrappers.FlattenObservation(
+            Fix6DPoseWrapper(env, pose=[0, 0, 0.3, -1.5707, 1.5707, 0])
+        )
 
     rng, sampling_rng = jax.random.split(rng)
     agent: SACAgent = make_sac_agent(
@@ -315,6 +360,12 @@ def main(_):
         print_green("starting actor loop")
         actor(agent, data_store, env, sampling_rng)
 
+    elif FLAGS.player:
+        sampling_rng = jax.device_put(sampling_rng, sharding.replicate())
+        data_store = QueuedDataStore(2000)
+        # player loop
+        print_green("starting player loop")
+        player(agent, data_store, env, sampling_rng)
     else:
         raise NotImplementedError("Must be either a learner or an actor")
 

@@ -24,8 +24,6 @@ _SAMPLING_BOUNDS = np.asarray([[0.25, -0.25], [0.55, 0.25]])
 
 
 class PandaPickCubeGymEnv(MujocoGymEnv):
-    metadata = {"render_modes": ["rgb_array", "human"]}
-
     def __init__(
         self,
         action_scale: np.ndarray = np.asarray([0.1, 1]),
@@ -144,8 +142,8 @@ class PandaPickCubeGymEnv(MujocoGymEnv):
         self._viewer = MujocoRenderer(
             self.model,
             self.data,
-            width=render_spec.width,
-            height=render_spec.height
+            width=1280,
+            height=960
             )
         self._viewer.render(self.render_mode)
 
@@ -293,7 +291,7 @@ class PandaPickCubeGymEnv(MujocoGymEnv):
 if __name__ == "__main__":
     env = PandaPickCubeGymEnv(render_mode="human")
     env.reset()
-    for i in range(100):
+    for i in range(1000):
         env.step(np.random.uniform(-1, 1, 4))
         env.render()
     env.close()

@@ -1,0 +1,13 @@
+env:
+reward:
+  dist_reward_scale: -10.0
+  rot_reward_scale: 1.0
+  rot_eps: 0.1
+  action_penalty_scale: -0.0002
+  reach_goal_bonus: 250
+  success_tolerance: 0.1
+  dist_reward_threshold: 0.05
+  fall_penalty: -100
+reset:
+  time_limit: 10.0
+  fall_dist: 0.24

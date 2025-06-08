@@ -1,0 +1,50 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "actor",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/async_sac_state_sim_dphand/async_sac_state_sim.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--actor",
+                "--render",
+                "--env", "DphandPickCube-v0",
+                "--exp_name=serl_dev_sim_test",
+                "--seed", "0",
+                "--random_steps", "1000",
+                "debug"
+            ],
+            "env": {
+                "XLA_PYTHON_CLIENT_PREALLOCATE": "false",
+                "XLA_PYTHON_CLIENT_MEM_FRACTION": ".05",
+            },
+        },
+        {
+            "name": "learner",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/async_sac_state_sim_dphand/async_sac_state_sim.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--learner",
+                "--env", "DphandPickCube-v0",
+                "--exp_name=serl_dev_sim_test",
+                "--seed", "0",
+                "--training_starts", "1000",
+                "--critic_actor_ratio", "8",
+                "--batch_size", "64",
+                "--debug" // wandb is disabled when debug
+            ],
+            "env": {
+                "XLA_PYTHON_CLIENT_PREALLOCATE": "false",
+                "XLA_PYTHON_CLIENT_MEM_FRACTION": ".05",
+            },
+        }
+    ]
+}
