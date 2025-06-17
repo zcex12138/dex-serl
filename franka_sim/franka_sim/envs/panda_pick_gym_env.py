@@ -138,12 +138,12 @@ class PandaPickCubeGymEnv(MujocoGymEnv):
         # NOTE: gymnasium is used here since MujocoRenderer is not available in gym. It
         # is possible to add a similar viewer feature with gym, but that can be a future TODO
         from gymnasium.envs.mujoco.mujoco_rendering import MujocoRenderer
-
+        from gymnasium.envs.mujoco.mujoco_env import MujocoEnv
         self._viewer = MujocoRenderer(
             self.model,
             self.data,
-            width=1280,
-            height=960
+            width=render_spec.width,
+            height=render_spec.height
             )
         self._viewer.render(self.render_mode)
 
@@ -290,8 +290,16 @@ class PandaPickCubeGymEnv(MujocoGymEnv):
 
 if __name__ == "__main__":
     env = PandaPickCubeGymEnv(render_mode="human")
+    import franka_sim
+    env = gym.make("PandaPickCubeVision-v0", render_mode="human")
     env.reset()
+    import cv2
     for i in range(1000):
-        env.step(np.random.uniform(-1, 1, 4))
+        obs, _, _, _, _= env.step(np.random.uniform(-1, 1, 4))
+        images = np.concatenate(
+            [obs["images"]["front"], obs["images"]["wrist"]], axis=1
+        )
+        cv2.imshow("images", images)
+        cv2.waitKey(1)
         env.render()
     env.close()

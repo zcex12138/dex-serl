@@ -18,6 +18,7 @@ else:
 
 from franka_sim.controllers import opspace
 from franka_sim.mujoco_gym_env import GymRenderingSpec, MujocoGymEnv_v2
+from gym.envs.mujoco.mujoco_rendering import RenderContextOffscreen
 
 _HERE = Path(__file__).parent
 _XML_PATH = _HERE / "xmls" / "dphand" /"dphand_arena.xml"
@@ -31,7 +32,7 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
         seed: int = 0,
         control_dt: float = 0.02, # n-substeps = control_dt / physics_dt
         physics_dt: float = 0.002, # dt
-        render_spec: GymRenderingSpec = GymRenderingSpec(),
+        render_spec: GymRenderingSpec = GymRenderingSpec(480, 480),
         render_mode: Literal["rgb_array", "human"] = "rgb_array",
         image_obs: bool = False,
     ):
@@ -48,23 +49,30 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
             render_spec=render_spec,
         )
 
+        # Viewer
         self.render_mode = render_mode
-        self.camera_id = (0 ,1)
+        # if self.render_mode == "human":
+        #     from gym.envs.mujoco.mujoco_rendering import Viewer
+        #     self._get_viewer(self.render_mode).viewer = Viewer(
+        #         self.model, self.data, self.render_spec.width, self.render_spec.height
+        #     )
+        #     self._get_viewer(self.render_mode).viewer.vopt.frame = mujoco.mjtFrame.mjFRAME_SITE
+        #     self._get_viewer(self.render_mode).viewer.vopt.geomgroup[0] = 1
+        
+        # Env cameras and render
+        self.camera_names = ['front','wrist']
+        self.camera_id = [
+            mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_CAMERA, name)
+            for name in self.camera_names
+        ] # [1, 2]
         self.image_obs = image_obs
+        # if self.image_obs:
+        #     self.obs_render = RenderContextOffscreen(self.model, self.data)
+        
+        self.obs_render = self._get_viewer("rgb_array")
+        self.viewer = self._get_viewer("human")
 
-        # NOTE: gymnasium is used here since MujocoRenderer is not available in gym. It
-        # is possible to add a similar viewer feature with gym, but that can be a future TODO
-        from gymnasium.envs.mujoco.mujoco_rendering import MujocoRenderer
-
-        self._viewer = MujocoRenderer(
-            self.model,
-            self.data,
-            width=render_spec.width,
-            height=render_spec.height,
-            )
-        self._viewer.render(self.render_mode)
-
-
+        
         # store
         self._obs = None
         self._rew = None
@@ -201,14 +209,8 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
         self._rew, terminated, trucated, info = self._get_reward(self._obs, np.asarray(action))
         return self._obs, self._rew, terminated, trucated, info
 
-    def render(self):
-        rendered_frames = []
-        for cam_id in self.camera_id:
-            rendered_frames.append(
-                self._viewer.render(render_mode="rgb_array")
-            )
-        
-        return rendered_frames
+
+
 
     # Helper methods.
 
@@ -222,17 +224,19 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
 
         if self.image_obs:
             obs["images"] = {}
+            images = []
+            self.obs_render.render(camera_id=-1) # 这一行不能删除，原因尚不清楚
+            for camera_id in self.camera_id:
+                self.obs_render.render(camera_id=camera_id)
+                image = self.obs_render.read_pixels(depth=False)
+                images.append(image[::-1, :, :])
+            obs["images"]["front"], obs["images"]["wrist"] = images[0], images[1]
 
-            obs["images"]["front"], obs["images"]["wrist"] = self.render()
             obs["state"]["block_pos"] = self.data.sensor("block_pos").data.astype(np.float32)
             obs["state"]["block_rot"] = self.data.sensor("block_quat").data.astype(np.float32)
         else:
             obs["state"]["block_pos"] = self.data.sensor("block_pos").data.astype(np.float32)
             obs["state"]["block_rot"] = self.data.sensor("block_quat").data.astype(np.float32)
-
-        if self.render_mode == "human":
-            self._viewer.render(self.render_mode)
-
         return obs
 
     def _get_reward(
@@ -294,11 +298,14 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
 
         return reward, terminated, trucated, {'success': success}
     
+    def render(self):
+        self._get_viewer(mode=self.render_mode).render()
+    
 if __name__ == "__main__":
     import franka_sim
     from serl_launcher.wrappers.dphand_wrappers import Fix6DPoseWrapper, TeleopIntervention
     # env = gym.make("DphandPickCube-v0", render_mode="human", )
-    env = gym.make("DphandPickCubeVision-v0", render_mode="human", )
+    env = gym.make("DphandPickCubeVisionTest-v0", render_mode="human", )
     env = gym.wrappers.FlattenObservation(env)
     env = TeleopIntervention(env, ip="192.168.3.44", test=True)
     env = Fix6DPoseWrapper(env, pose=[0, 0, 0.3, -1.5707, 1.5707, 0])
@@ -320,12 +327,14 @@ if __name__ == "__main__":
         #                         size=env.action_space.shape)
         obs, reward, done, truncated, info = env.step(action)
         obs_unflatten = env.unwrapped._obs
-        image = np.hstack(
-            [obs_unflatten["images"]["front"], obs_unflatten["images"]["wrist"]]
-        )
-        cv2.imshow("image_obs", image)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        if env.unwrapped.image_obs:
+            image = np.concatenate([
+                obs_unflatten["images"]["front"],
+                obs_unflatten["images"]["wrist"]
+            ], axis=1)
+            cv2.imshow("image_obs", image)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
         # reset
         if truncated:
             obs, _ = env.reset()

@@ -27,3 +27,17 @@ register(
     kwargs={"config_path": CUR_PATH / "./envs/configs/dphand_pick_cube_env_cfg.yaml"},
     # kwargs={"config_path": "./configs/dphand_pick_cube_env_cfg.yaml"},
 )
+register(
+    id="DphandPickCubeVision-v0",
+    entry_point="franka_sim.envs:DphandPickCubeGymEnv",
+    kwargs={"config_path": CUR_PATH / "./envs/configs/dphand_pick_cube_env_cfg.yaml",
+            "image_obs": True}
+    # kwargs={"config_path": "./configs/dphand_pick_cube_env_cfg.yaml"},
+)
+register(
+    id="DphandPickCubeVisionTest-v0",
+    entry_point="franka_sim.envs:DphandPickCubeGymEnvTest",
+    kwargs={"config_path": CUR_PATH / "./envs/configs/dphand_pick_cube_env_cfg.yaml",
+            "image_obs": True}
+    # kwargs={"config_path": "./configs/dphand_pick_cube_env_cfg.yaml"},
+)
