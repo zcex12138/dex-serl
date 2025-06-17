@@ -241,7 +241,7 @@ def learner(
         single_buffer_batch_size = FLAGS.batch_size // 2
         demo_iterator = demo_buffer.get_iterator(
             sample_args={
-                "batch_size": ,
+                "batch_size": single_buffer_batch_size,
             },
             device=sharding.replicate(),
         )

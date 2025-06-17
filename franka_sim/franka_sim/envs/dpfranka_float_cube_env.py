@@ -8,7 +8,7 @@ from jax import numpy as jnp
 from gym import spaces
 from franka_sim.envs.utils import *
 import yaml
-from mujoco import mjx
+# from mujoco import mjx
 from franka_sim.controllers import opspace
 from franka_sim.mujoco_gym_env import MujocoGymEnv, GymRenderingSpec
 from gymnasium.envs.mujoco.mujoco_rendering import MujocoRenderer
@@ -272,17 +272,12 @@ class DphandFrankaFloatCubeEnv(MujocoGymEnv):
             rgb_cache[cam_name] = rgb_data
         self.cap.put(rgb_cache)
         return rgb_cache
-    
-        
-
 
 
 if __name__ == "__main__":
     import time
-    __file__ = "/home/jzq/github/dex-serl/franka_sim/franka_sim/envs/dpfranka_float_cube_env.py"
-    cfg_path = '/home/jzq/github/dex-serl/franka_sim/franka_sim/envs/configs/dphand_pick_cube_env_cfg.yaml'
-    _HERE = Path(__file__).parent
-    _XML_PATH = _HERE / "xmls" / "dpfrankacube" /"dphand_franka_arena.xml"
+    CUR_DIR = Path(__file__).parent
+    cfg_path = CUR_DIR / "configs" / "dphand_pick_cube_env_cfg.yaml"
     env = DphandFrankaFloatCubeEnv(
         config_path=cfg_path, 
         IMAGES=False, 
