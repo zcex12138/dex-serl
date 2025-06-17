@@ -3,7 +3,7 @@ import gym.spaces
 import numpy as np
 from pynput import keyboard
 
-from dphand_teleop.dphand_teleoperator import DPhandTeleoperator
+from serl_launcher.dphand_teleop.dphand_teleoperator import DPhandTeleoperator
 import mujoco
 
 class Fix6DPoseWrapper(gym.ActionWrapper):
@@ -65,14 +65,9 @@ class TeleopIntervention(gym.Wrapper):
         new_action, replaced = self.action(action)
         obs, rew, done, truncated, info = self.env.step(new_action)
         if replaced:
-
             info["intervene_action"] = new_action
         return obs, rew, done, truncated, info
     
-    # 咱们的teleop干预没有准备close()方法吗
     def close(self):
         self.listener.stop()
-    #     self.expert.close()
-    #     super().close()
-
         

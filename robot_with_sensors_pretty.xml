@@ -1,0 +1,443 @@
+<mujoco model="panda">
+  <compiler angle="radian" autolimits="true" />
+  <option cone="elliptic" gravity="0 0 -9.81" impratio="10" timestep="0.002" />
+  <default>
+    <default class="panda">
+      <joint armature="0.1" damping="1" axis="0 0 1" range="-2.8973 2.8973" />
+      <default class="panda/visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2" />
+      </default>
+      <default class="panda/collision">
+        <geom type="mesh" group="3" />
+      </default>
+      <site size="0.001" rgba="0.5 0.5 0.5 0.3" group="4" />
+    </default>
+    <default class="plastic">
+      <geom solimp="0.5 0.99 0.0001" solref="0.005 1" type="mesh" material="black" />
+    </default>
+    <default class="jointconfig">
+      <joint axis="1 0 0" damping="0.02" armature="0.0002" frictionloss="0.05" />
+    </default>
+    <default class="DIPCtrl">
+      <joint range="0 1.22173" />
+      <position kp="1.0" kv="0.01" ctrlrange="0 1.22173" forcerange="-0.66818 0.66818" />
+    </default>
+    <default class="PIPCtrl">
+      <joint range="0 1.919862" />
+      <position kp="1.0" kv="0.01" ctrlrange="0 1.919862" forcerange="-2.063 2.063" />
+    </default>
+    <default class="MCPCtrl">
+      <joint range="-0.523599 1.570796" />
+      <position kp="1.2" kv="0.01" ctrlrange="-0.523599 1.570796" forcerange="-4.83 4.83" />
+    </default>
+    <default class="MCP2Ctrl">
+      <joint range="-0.610865 0.610865" />
+      <position kp="1.0" kv="0.01" ctrlrange="-0.610865 0.610865" forcerange="-2.45 2.45" />
+    </default>
+  </default>
+  <asset>
+    <material name="white" rgba="1 1 1 1" />
+    <material name="off_white" rgba="0.901961 0.921569 0.929412 1" />
+    <material name="dark_grey" rgba="0.25 0.25 0.25 1" />
+    <material name="green" rgba="0 1 0 1" />
+    <material name="light_blue" rgba="0.039216 0.541176 0.780392 1" />
+    <material name="metal" rgba="0.58 0.58 0.58 1" />
+    <material name="silicone" rgba="0.1882 0.1882 0.1882 1" />
+    <mesh name="link0_c" file="franka_emika_panda/assets/link0.stl" />
+    <mesh name="link1_c" file="franka_emika_panda/assets/link1.stl" />
+    <mesh name="link2_c" file="franka_emika_panda/assets/link2.stl" />
+    <mesh name="link3_c" file="franka_emika_panda/assets/link3.stl" />
+    <mesh name="link4_c" file="franka_emika_panda/assets/link4.stl" />
+    <mesh name="link5_c0" file="franka_emika_panda/assets/link5_collision_0.obj" />
+    <mesh name="link5_c1" file="franka_emika_panda/assets/link5_collision_1.obj" />
+    <mesh name="link5_c2" file="franka_emika_panda/assets/link5_collision_2.obj" />
+    <mesh name="link6_c" file="franka_emika_panda/assets/link6.stl" />
+    <mesh name="link7_c" file="franka_emika_panda/assets/link7.stl" />
+    <mesh file="franka_emika_panda/assets/link0_0.obj" />
+    <mesh file="franka_emika_panda/assets/link0_1.obj" />
+    <mesh file="franka_emika_panda/assets/link0_2.obj" />
+    <mesh file="franka_emika_panda/assets/link0_3.obj" />
+    <mesh file="franka_emika_panda/assets/link0_4.obj" />
+    <mesh file="franka_emika_panda/assets/link0_5.obj" />
+    <mesh file="franka_emika_panda/assets/link0_7.obj" />
+    <mesh file="franka_emika_panda/assets/link0_8.obj" />
+    <mesh file="franka_emika_panda/assets/link0_9.obj" />
+    <mesh file="franka_emika_panda/assets/link0_10.obj" />
+    <mesh file="franka_emika_panda/assets/link0_11.obj" />
+    <mesh file="franka_emika_panda/assets/link1.obj" />
+    <mesh file="franka_emika_panda/assets/link2.obj" />
+    <mesh file="franka_emika_panda/assets/link3_0.obj" />
+    <mesh file="franka_emika_panda/assets/link3_1.obj" />
+    <mesh file="franka_emika_panda/assets/link3_2.obj" />
+    <mesh file="franka_emika_panda/assets/link3_3.obj" />
+    <mesh file="franka_emika_panda/assets/link4_0.obj" />
+    <mesh file="franka_emika_panda/assets/link4_1.obj" />
+    <mesh file="franka_emika_panda/assets/link4_2.obj" />
+    <mesh file="franka_emika_panda/assets/link4_3.obj" />
+    <mesh file="franka_emika_panda/assets/link5_0.obj" />
+    <mesh file="franka_emika_panda/assets/link5_1.obj" />
+    <mesh file="franka_emika_panda/assets/link5_2.obj" />
+    <mesh file="franka_emika_panda/assets/link6_0.obj" />
+    <mesh file="franka_emika_panda/assets/link6_1.obj" />
+    <mesh file="franka_emika_panda/assets/link6_2.obj" />
+    <mesh file="franka_emika_panda/assets/link6_3.obj" />
+    <mesh file="franka_emika_panda/assets/link6_4.obj" />
+    <mesh file="franka_emika_panda/assets/link6_5.obj" />
+    <mesh file="franka_emika_panda/assets/link6_6.obj" />
+    <mesh file="franka_emika_panda/assets/link6_7.obj" />
+    <mesh file="franka_emika_panda/assets/link6_8.obj" />
+    <mesh file="franka_emika_panda/assets/link6_9.obj" />
+    <mesh file="franka_emika_panda/assets/link6_10.obj" />
+    <mesh file="franka_emika_panda/assets/link6_11.obj" />
+    <mesh file="franka_emika_panda/assets/link6_12.obj" />
+    <mesh file="franka_emika_panda/assets/link6_13.obj" />
+    <mesh file="franka_emika_panda/assets/link6_14.obj" />
+    <mesh file="franka_emika_panda/assets/link6_15.obj" />
+    <mesh file="franka_emika_panda/assets/link6_16.obj" />
+    <mesh file="franka_emika_panda/assets/link7_0.obj" />
+    <mesh file="franka_emika_panda/assets/link7_1.obj" />
+    <mesh file="franka_emika_panda/assets/link7_2.obj" />
+    <mesh file="franka_emika_panda/assets/link7_3.obj" />
+    <mesh file="franka_emika_panda/assets/link7_4.obj" />
+    <mesh file="franka_emika_panda/assets/link7_5.obj" />
+    <mesh file="franka_emika_panda/assets/link7_6.obj" />
+    <mesh file="franka_emika_panda/assets/link7_7.obj" />
+    <material name="transparent_black" specular="0.5" shininess="0.25" rgba="0.2 0.2 0.2 0.5" />
+    <material name="black" specular="0.5" shininess="0.25" rgba="0.2 0.2 0.2 0.5" />
+    <material name="gray" specular="0.0" shininess="0.5" rgba="0.80848 0.80848 0.80848 1" />
+    <mesh name="Wrist" file="DPhand/meshes_obj/Wrist.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Palm" file="DPhand/meshes_obj/Palm.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Thumb-MCP" file="DPhand/meshes_obj/MCP.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Thumb-PP" file="DPhand/meshes_obj/PP.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Thumb-PM" file="DPhand/meshes_obj/PM.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Thumb-PD" file="DPhand/meshes_obj/PD.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Index-PP" file="DPhand/meshes_obj/PP.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Index-PM" file="DPhand/meshes_obj/PM.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Index-PD" file="DPhand/meshes_obj/PD.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Middle-PD" file="DPhand/meshes_obj/PD.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Middle-PM" file="DPhand/meshes_obj/PM.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Middle-PP" file="DPhand/meshes_obj/PP.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Middle-MCP" file="DPhand/meshes_obj/MCP.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Ring-MCP" file="DPhand/meshes_obj/MCP.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Ring-PP" file="DPhand/meshes_obj/PP.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Ring-PM" file="DPhand/meshes_obj/PM.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Ring-PD" file="DPhand/meshes_obj/PD.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Little-PD" file="DPhand/meshes_obj/PD.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Little-PM" file="DPhand/meshes_obj/PM.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Little-PP" file="DPhand/meshes_obj/PP.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Little-MCP" file="DPhand/meshes_obj/MCP.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Index-MCP" file="DPhand/meshes_obj/MCP.obj" scale="0.001 0.001 0.001" />
+    <mesh name="Forearm" file="DPhand/meshes_obj/Forearm.obj" scale="0.001 0.001 0.001" />
+  </asset>
+  <worldbody>
+    <body name="link0" childclass="panda">
+      <inertial mass="0.629769" pos="0 0 0" fullinertia="0.00315 0.00388 0.004285 8.2904e-7 0.00015 8.2299e-6" />
+      <geom mesh="link0_0" material="off_white" class="panda/visual" />
+      <geom mesh="link0_1" material="dark_grey" class="panda/visual" />
+      <geom mesh="link0_2" material="off_white" class="panda/visual" />
+      <geom mesh="link0_3" material="dark_grey" class="panda/visual" />
+      <geom mesh="link0_4" material="off_white" class="panda/visual" />
+      <geom mesh="link0_5" material="dark_grey" class="panda/visual" />
+      <geom mesh="link0_7" material="white" class="panda/visual" />
+      <geom mesh="link0_8" material="white" class="panda/visual" />
+      <geom mesh="link0_9" material="dark_grey" class="panda/visual" />
+      <geom mesh="link0_10" material="off_white" class="panda/visual" />
+      <geom mesh="link0_11" material="white" class="panda/visual" />
+      <geom mesh="link0_c" class="panda/collision" />
+      <body name="link1" pos="0 0 0.333">
+        <inertial mass="4.970684" pos="0.003875 0.002081 -0.04762" fullinertia="0.70337 0.70661 0.0091170 -0.00013900 0.0067720 0.019169" />
+        <joint name="joint1" />
+        <site name="joint1" />
+        <geom material="white" mesh="link1" class="panda/visual" />
+        <geom mesh="link1_c" class="panda/collision" />
+        <body name="link2" quat="1 -1 0 0">
+          <inertial mass="0.646926" pos="-0.003141 -0.02872 0.003495" fullinertia="0.0079620 2.8110e-2 2.5995e-2 -3.925e-3 1.0254e-2 7.04e-4" />
+          <joint name="joint2" range="-1.7628 1.7628" />
+          <site name="joint2" />
+          <geom material="white" mesh="link2" class="panda/visual" />
+          <geom mesh="link2_c" class="panda/collision" />
+          <body name="link3" pos="0 -0.316 0" quat="1 1 0 0">
+            <inertial mass="3.228604" pos="2.7518e-2 3.9252e-2 -6.6502e-2" fullinertia="3.7242e-2 3.6155e-2 1.083e-2 -4.761e-3 -1.1396e-2 -1.2805e-2" />
+            <joint name="joint3" />
+            <site name="joint3" />
+            <geom mesh="link3_0" material="white" class="panda/visual" />
+            <geom mesh="link3_1" material="white" class="panda/visual" />
+            <geom mesh="link3_2" material="white" class="panda/visual" />
+            <geom mesh="link3_3" material="dark_grey" class="panda/visual" />
+            <geom mesh="link3_c" class="panda/collision" />
+            <body name="link4" pos="0.0825 0 0" quat="1 1 0 0">
+              <inertial mass="3.587895" pos="-5.317e-2 1.04419e-1 2.7454e-2" fullinertia="2.5853e-2 1.9552e-2 2.8323e-2 7.796e-3 -1.332e-3 8.641e-3" />
+              <joint name="joint4" range="-3.0718 -0.0698" />
+              <site name="joint4" />
+              <geom mesh="link4_0" material="white" class="panda/visual" />
+              <geom mesh="link4_1" material="white" class="panda/visual" />
+              <geom mesh="link4_2" material="dark_grey" class="panda/visual" />
+              <geom mesh="link4_3" material="white" class="panda/visual" />
+              <geom mesh="link4_c" class="panda/collision" />
+              <body name="link5" pos="-0.0825 0.384 0" quat="1 -1 0 0">
+                <inertial mass="1.225946" pos="-1.1953e-2 4.1065e-2 -3.8437e-2" fullinertia="3.5549e-2 2.9474e-2 8.627e-3 -2.117e-3 -4.037e-3 2.29e-4" />
+                <joint name="joint5" />
+                <site name="joint5" />
+                <geom mesh="link5_0" material="dark_grey" class="panda/visual" />
+                <geom mesh="link5_1" material="white" class="panda/visual" />
+                <geom mesh="link5_2" material="white" class="panda/visual" />
+                <geom mesh="link5_c0" class="panda/collision" />
+                <geom mesh="link5_c1" class="panda/collision" />
+                <geom mesh="link5_c2" class="panda/collision" />
+                <body name="link6" quat="1 1 0 0">
+                  <inertial mass="1.666555" pos="6.0149e-2 -1.4117e-2 -1.0517e-2" fullinertia="1.964e-3 4.354e-3 5.433e-3 1.09e-4 -1.158e-3 3.41e-4" />
+                  <joint name="joint6" range="-0.0175 3.7525" />
+                  <site name="joint6" />
+                  <geom mesh="link6_0" material="off_white" class="panda/visual" />
+                  <geom mesh="link6_1" material="white" class="panda/visual" />
+                  <geom mesh="link6_2" material="dark_grey" class="panda/visual" />
+                  <geom mesh="link6_3" material="white" class="panda/visual" />
+                  <geom mesh="link6_4" material="white" class="panda/visual" />
+                  <geom mesh="link6_5" material="white" class="panda/visual" />
+                  <geom mesh="link6_6" material="white" class="panda/visual" />
+                  <geom mesh="link6_7" material="light_blue" class="panda/visual" />
+                  <geom mesh="link6_8" material="light_blue" class="panda/visual" />
+                  <geom mesh="link6_9" material="dark_grey" class="panda/visual" />
+                  <geom mesh="link6_10" material="dark_grey" class="panda/visual" />
+                  <geom mesh="link6_11" material="white" class="panda/visual" />
+                  <geom mesh="link6_12" material="green" class="panda/visual" />
+                  <geom mesh="link6_13" material="white" class="panda/visual" />
+                  <geom mesh="link6_14" material="dark_grey" class="panda/visual" />
+                  <geom mesh="link6_15" material="dark_grey" class="panda/visual" />
+                  <geom mesh="link6_16" material="white" class="panda/visual" />
+                  <geom mesh="link6_c" class="panda/collision" />
+                  <body name="link7" pos="0.088 0 0" quat="1 1 0 0">
+                    <inertial mass="7.35522e-01" pos="1.0517e-2 -4.252e-3 6.1597e-2" fullinertia="1.2516e-2 1.0027e-2 4.815e-3 -4.28e-4 -1.196e-3 -7.41e-4" />
+                    <joint name="joint7" />
+                    <site name="joint7" />
+                    <geom mesh="link7_0" material="white" class="panda/visual" />
+                    <geom mesh="link7_1" material="dark_grey" class="panda/visual" />
+                    <geom mesh="link7_2" material="dark_grey" class="panda/visual" />
+                    <geom mesh="link7_3" material="dark_grey" class="panda/visual" />
+                    <geom mesh="link7_4" material="dark_grey" class="panda/visual" />
+                    <geom mesh="link7_5" material="dark_grey" class="panda/visual" />
+                    <geom mesh="link7_6" material="dark_grey" class="panda/visual" />
+                    <geom mesh="link7_7" material="white" class="panda/visual" />
+                    <geom mesh="link7_c" class="panda/collision" />
+                    <body name="attachment" pos="0 0 0.107" quat="0.3826834 0 0 0.9238795">
+                      <site name="attachment_site" quat="0 0 0 1" />
+                      <geom type="box" size="0.01 0.01 0.01" rgba="1.0 0.0 0.0 0.5" />
+                      <camera name="handcam_rgba" pos="0.05 0 0.15" euler="3.1415926535897922 0 1.5707963267948963" />`
+                        <body name="Forearm" pos="0 0 0.1" euler="-1.5707963267948963 -1.5707963267948963 3.1415926535897922">
+                        <geom class="plastic" name="Forearm_geom" type="mesh" mesh="Forearm" pos="0 0 0" euler="0 0 0" material="transparent_black" />
+                        <inertial mass="1.9453304463125118" pos="-2.6615378024531148e-08 0.009019289013986305 0.0032088635623812897" fullinertia="0.009066690743886285 0.002094541290341062 0.00960327727265748 -6.786222020669816e-09 -1.1843581789473546e-09 8.685478979449512e-05" />
+                        <body name="Wrist" pos="-5.329070518200751e-17 0.13654999999999984 -1.7763568394002505e-17" euler="-3.141592653589793 7.41212194690677e-32 -3.141592653589793">
+                          <joint class="jointconfig" name="Forearm_Wrist-Flexion" type="hinge" axis="0.9999999999999922 -8.887205207863613e-16 -4.3835946866997966e-16" pos="0.020000023862298447 1.7202427902594974e-07 1.7511521353289145e-07" range="-1.047198 1.047198" damping="2.0 " />
+                          <geom class="plastic" name="Wrist_geom" type="mesh" mesh="Wrist" pos="0 0 0" euler="0 0 0" />
+                          <inertial mass="0.02656214079320285" pos="-1.69243593868272e-07 0.0016472458767444085 -1.6800554081391377e-06" fullinertia="2.0813142204422996e-06 4.359133919833236e-06 3.936873235039729e-06 -4.4040114384845307e-11 -1.131996854421492e-08 -5.300701354629199e-10" />
+                          <body name="Palm" pos="0.01129099357241001 0.07971340504264361 0.043586459565069006" euler="3.141592653589793 -5.645033986231014e-06 -3.141592653589793">
+                            <joint class="jointconfig" name="Wrist_Wrist-Abduction" type="hinge" axis="5.645033985756887e-06 3.1918911957973315e-16 -0.9999999999840592" pos="0.011290782654479357 -0.06471323301836342 0.033136348187234654" range="-0.872665 0.523599" damping="0.1" />
+                            <geom class="plastic" name="Palm_geom" type="mesh" mesh="Palm" pos="0 0 0" euler="0 0 0" />
+                            <inertial mass="0.2602111705177352" pos="0.008366751647868122 -0.02196163963553714 0.050750200275004716" fullinertia="0.00016809656398654498 9.383212552094538e-05 0.0002082113956576322 3.3379116774949452e-06 -8.329607410925668e-07 -6.439751497203951e-06" />
+                            <body name="Thumb-MCP" pos="0.06646453612762752 -0.006132543067662581 0.23216861852976048" euler="0.8433678826770468 -0.7227359898922351 1.0799202183467054">
+                              <joint class="jointconfig" name="Palm_Thumb-MCP-Flexion" type="hinge" axis="0.9999993741212565 -1.9773373993725585e-08 2.7577507161202774e-07" pos="-0.19100048404368228 0.008500111311707255 -0.05328147048432252" range="-0.523599 1.570796" />
+                              <geom class="plastic" name="Thumb-MCP_geom" type="mesh" mesh="Thumb-MCP" pos="0 0 0" euler="0 0 0" />
+                              <inertial mass="0.005036994326199342" pos="-0.20000003939517735 0.00771726400998568 -0.05238245453895492" fullinertia="1.2970868632662727e-07 1.6007173878014266e-07 1.5900576781080497e-07 1.9696295556984942e-13 -5.666079262914197e-13 -1.4577138745808807e-08" />
+                              <body name="Thumb-PP" pos="-0.1999099137026213 -8.975787161681125e-05 -0.09186663199430434" euler="1.5707964398014924 -4.440892098500623e-16 -3.1415926535897927">
+                                <joint class="jointconfig" name="Thumb-MCP_Thumb-MCP-Abduction" type="hinge" axis="1.2682376226980097e-07 -0.4999997811126733 0.8660249336764163" pos="9.00146861002862e-05 -0.03683519983393464 -0.011620692906578887" range="-0.610865 0.610865" />
+                                <geom class="plastic" name="Thumb-PP_geom" type="mesh" mesh="Thumb-PP" pos="0 0 0" euler="0 0 0" />
+                                <inertial mass="0.03708856624254697" pos="9.030301616385424e-05 -0.014531198977560479 -0.005880351460123734" fullinertia="5.753639912619248e-06 2.3941975919820493e-06 5.462290746232934e-06 -1.8478345177537705e-10 -9.173268363720042e-11 -6.425808363890366e-07" />
+                                <body name="Thumb-PM" pos="9.00862973793437e-05 0.0006333688633876378 -8.975695249269222e-05" euler="1.570796326794897 -3.885780586188048e-16 -3.1415926535897922">
+                                  <joint class="jointconfig" name="Thumb-PP_Thumb-PIP-Flexion" type="hinge" axis="0.9999993741212565 -1.9773343240547803e-08 2.757750738047182e-07" pos="0.009000053397670283 0.007500012297346963 -0.007499959122900093" range="0 1.919862" />
+                                  <geom class="plastic" name="Thumb-PM_geom" type="mesh" mesh="Thumb-PM" pos="0 0 0" euler="0 0 0" />
+                                  <inertial mass="0.020227223379927373" pos="-1.848580694421842e-07 0.005195827579475683 -0.0187189494907972" fullinertia="1.9967071755990337e-06 2.0011051517931557e-06 8.144475144013871e-07 -8.221468741961615e-12 3.2138099137484784e-12 -1.7160624501976697e-07" />
+                                  <body name="Thumb-PD" pos="2.0428103653102883e-15 0.006000000000000014 -0.030374007257449022" euler="-0.0 -5.30131494258512e-15 1.6653345369377338e-16">
+                                    <joint class="jointconfig" name="Thumb-PM_Thumb-DIP-Flexion" type="hinge" axis="0.9999993741212571 -1.9773343351570105e-08 2.7577506855891443e-07" pos="0.007500185506918168 -1.0135717486668694e-08 -0.005999648442277302" range="0 1.22173" />
+                                    <geom class="plastic" name="Thumb-PD_geom" type="mesh" mesh="Thumb-PD" pos="0 0 0" euler="0 0 0" />
+                                    <inertial mass="0.008221233655296712" pos="4.78256383562841e-06 -0.001059520123761583 -0.014235123790328312" fullinertia="5.898243383359009e-07 6.159934754370924e-07 2.2995080143593457e-07 -4.951643830232875e-11 -3.519078467407562e-10 -5.015937733979458e-08" />
+                                  </body>
+                                </body>
+                              </body>
+                            </body>
+                            <body name="Index-MCP" pos="-0.17611858726643287 0.01860627582114212 0.0520866274849916" euler="1.5707752592412532 -0.2617993878586258 -3.141592653589793">
+                              <joint class="jointconfig" name="Palm_Index-MCP-Flexion" type="hinge" axis="1.0000001561184753 1.9302374834874957e-12 8.852540064885339e-08" pos="-0.1910001700693438 0.00850017511903284 -0.05328168114121647" range="-0.523599 1.570796" />
+                              <geom class="plastic" name="Index-MCP_geom" type="mesh" mesh="Index-MCP" pos="0 0 0" euler="0 0 0" />
+                              <inertial mass="0.005036994326199342" pos="-0.20000003939517752 0.007717264009985939 -0.052382454538954695" fullinertia="1.297086863268387e-07 1.6007173878164116e-07 1.5900576781229262e-07 1.9696271334408768e-13 -5.666087175359978e-13 -1.4577138745714998e-08" />
+                              <body name="Index-PP" pos="-0.19990991370262104 -8.975787161696003e-05 -0.09186663199430434" euler="1.5707964398014924 -6.468858380816871e-16 -3.141592653589793">
+                                <joint class="jointconfig" name="Index-MCP_Index-MCP-Abduction" type="hinge" axis="-2.6781389336760775e-07 -0.5000005133392491 0.8660250383253366" pos="8.999934378633653e-05 -0.03683495104841343 -0.011620898985207259" range="-0.610865 0.610865" />
+                                <geom class="plastic" name="Index-PP_geom" type="mesh" mesh="Index-PP" pos="0 0 0" euler="0 0 0" />
+                                <inertial mass="0.03708856624254697" pos="9.030301616390303e-05 -0.014531198977560611 -0.005880351460123762" fullinertia="5.753639912618303e-06 2.3941975919821154e-06 5.4622907462326845e-06 -1.8478345217030616e-10 -9.17326836966934e-11 -6.425808363889253e-07" />
+                                <body name="Index-PM" pos="9.008629737936147e-05 0.0006333688633875312 -8.97569524926678e-05" euler="1.5707963267948966 1.1102230246251568e-16 -3.1415926535897927">
+                                  <joint class="jointconfig" name="Index-PP_Index-PIP-Flexion" type="hinge" axis="1.0000001561184766 1.9402182929335594e-12 8.852540045456436e-08" pos="0.009000288994289127 0.007500156170805646 -0.007499409252653209" range="0 1.919862" />
+                                  <geom class="plastic" name="Index-PM_geom" type="mesh" mesh="Index-PM" pos="0 0 0" euler="0 0 0" />
+                                  <inertial mass="0.020227223379927373" pos="-1.848580693832036e-07 0.005195827579475731 -0.01871894949079733" fullinertia="1.9967071755979597e-06 2.0011051517931565e-06 8.144475144015177e-07 -8.221468830239125e-12 3.2138093862587105e-12 -1.716062450195863e-07" />
+                                  <body name="Index-PD" pos="1.838529328779259e-15 0.005999999999999879 -0.030374007257448526" euler="4.1619810896287264e-17 -5.8009153036664374e-15 5.659365933784879e-17">
+                                    <joint class="jointconfig" name="Index-PM_Index-DIP-Flexion" type="hinge" axis="1.000000156118477 1.9401617001212545e-12 8.852539465364906e-08" pos="0.007500340150546129 -4.768566481272736e-07 -0.005999444697657891" range="0 1.22173" />
+                                    <geom class="plastic" name="Index-PD_geom" type="mesh" mesh="Index-PD" pos="0 0 0" euler="0 0 0" />
+                                    <inertial mass="0.008221233655296712" pos="4.782563835702136e-06 -0.0010595201237615741 -0.014235123790328466" fullinertia="5.898243383354302e-07 6.159934754366981e-07 2.2995080143603772e-07 -4.951643833947085e-11 -3.519078468321299e-10 -5.0159377339789395e-08" />
+                                  </body>
+                                </body>
+                              </body>
+                            </body>
+                            <body name="Middle-MCP" pos="-0.18870930045441625 -0.029730502816816086 0.052085394207460056" euler="1.5707963284469457 -1.915701280528547e-18 -3.141587008555807">
+                              <joint class="jointconfig" name="Palm_Middle-MCP-Flexion" type="hinge" axis="0.9999999999999927 -5.144259135054388e-16 1.0216509586550925e-14" pos="-0.190999976137697 0.00850017511521407 -0.053282269784410745" range="-0.523599 1.570796" />
+                              <geom class="plastic" name="Middle-MCP_geom" type="mesh" mesh="Middle-MCP" pos="0 0 0" euler="0 0 0" />
+                              <inertial mass="0.005036994326199342" pos="-0.20000003939517802 0.00771726400998593 -0.052382454538954855" fullinertia="1.2970868632693096e-07 1.6007173878119713e-07 1.590057678117707e-07 1.9696273647388832e-13 -5.66608568171624e-13 -1.4577138745737425e-08" />
+                              <body name="Middle-PP" pos="-0.1999099137026208 -8.97578716168801e-05 -0.09186663199430463" euler="1.5707964398014933 -1.6303776237407785e-15 3.141592653589792">
+                                <joint class="jointconfig" name="Middle-MCP_Middle-MCP-Abduction" type="hinge" axis="2.108308406328883e-15 -0.5000000964358128 0.8660249443227128" pos="9.006243507892484e-05 -0.03683436090165744 -0.011620937152247808" range="-0.610865 0.610865" />
+                                <geom class="plastic" name="Middle-PP_geom" type="mesh" mesh="Middle-PP" pos="0 0 0" euler="0 0 0" />
+                                <inertial mass="0.03708856624254697" pos="9.030301616385639e-05 -0.014531198977560526 -0.005880351460123758" fullinertia="5.753639912620901e-06 2.3941975919821687e-06 5.4622907462329505e-06 -1.8478345192100178e-10 -9.173268371915364e-11 -6.425808363889447e-07" />
+                                <body name="Middle-PM" pos="9.008629737941476e-05 0.0006333688633878154 -8.975695249255233e-05" euler="1.570796326794896 3.5060138694304263e-15 3.141592653589793">
+                                  <joint class="jointconfig" name="Middle-PP_Middle-PIP-Flexion" type="hinge" axis="0.9999999999999915 1.2523998844324682e-15 8.290647917111368e-15" pos="0.009000023862300784 0.007500175192364041 -0.00750026978608391" range="0 1.919862" />
+                                  <geom class="plastic" name="Middle-PM_geom" type="mesh" mesh="Middle-PM" pos="0 0 0" euler="0 0 0" />
+                                  <inertial mass="0.020227223379927373" pos="-1.848580693926345e-07 0.005195827579475707 -0.018718949490797342" fullinertia="1.9967071755999316e-06 2.001105151793533e-06 8.14447514401632e-07 -8.221468839957543e-12 3.2138097021157473e-12 -1.716062450195371e-07" />
+                                  <body name="Middle-PD" pos="1.936228954946273e-15 0.00599999999999997 -0.03037400725744824" euler="-1.5265541442305315e-16 -5.723529200691246e-15 2.7755575612648e-17">
+                                    <joint class="jointconfig" name="Middle-PM_Middle-DIP-Flexion" type="hinge" axis="0.9999999999999903 1.224644308819821e-15 2.567118716420166e-15" pos="0.007500023862299049 1.719771129834434e-07 -0.0060002623616039015" range="0 1.22173" />
+                                    <geom class="plastic" name="Middle-PD_geom" type="mesh" mesh="Middle-PD" pos="0 0 0" euler="0 0 0" />
+                                    <inertial mass="0.008221233655296712" pos="4.782563835693732e-06 -0.0010595201237615774 -0.014235123790328407" fullinertia="5.8982433833592e-07 6.159934754369468e-07 2.2995080143610427e-07 -4.9516438339518763e-11 -3.5190784665454645e-10 -5.0159377339798586e-08" />
+                                  </body>
+                                </body>
+                              </body>
+                            </body>
+                            <body name="Ring-MCP" pos="-0.18767024819266495 -0.08492170036827837 0.05208423804242273" euler="1.57081739434854 0.26179938785860357 -3.141592653589793">
+                              <joint class="jointconfig" name="Palm_Ring-MCP-Flexion" type="hinge" axis="1.0000001561184764 1.93040574150027e-12 -8.852537683456951e-08" pos="-0.19100035948522942 0.008500175102491786 -0.05328127297908482" range="-0.523599 1.570796" />
+                              <geom class="plastic" name="Ring-MCP_geom" type="mesh" mesh="Ring-MCP" pos="0 0 0" euler="0 0 0" />
+                              <inertial mass="0.005036994326199342" pos="-0.2000000393951779 0.007717264009985978 -0.05238245453895469" fullinertia="1.297086863270078e-07 1.6007173878149897e-07 1.590057678118756e-07 1.9696270663761313e-13 -5.666087329612618e-13 -1.4577138745797626e-08" />
+                              <body name="Ring-PP" pos="-0.19990991370262098 -8.975787161693339e-05 -0.09186663199430477" euler="1.5707964398014922 -1.4657405402796817e-15 3.141592653589792">
+                                <joint class="jointconfig" name="Ring-MCP_Ring-MCP-Abduction" type="hinge" axis="-3.563392845240543e-07 -0.49999983875427456 0.8660248490652869" pos="9.012715254536063e-05 -0.03683507092069301 -0.011620975312479305" range="-0.610865 0.610865" />
+                                <geom class="plastic" name="Ring-PP_geom" type="mesh" mesh="Ring-PP" pos="0 0 0" euler="0 0 0" />
+                                <inertial mass="0.03708856624254697" pos="9.030301616386573e-05 -0.0145311989775605 -0.0058803514601237505" fullinertia="5.7536399126189585e-06 2.394197591982186e-06 5.4622907462321746e-06 -1.8478345194986583e-10 -9.173268371364452e-11 -6.425808363889471e-07" />
+                                <body name="Ring-PM" pos="9.008629737945029e-05 0.0006333688633875312 -8.975695249265225e-05" euler="1.5707963267948961 2.9420910152566558e-15 3.141592653589793">
+                                  <joint class="jointconfig" name="Ring-PP_Ring-PIP-Flexion" type="hinge" axis="1.0000001561184748 1.9219578033436878e-12 -8.852537849990405e-08" pos="0.00899988855791442 0.007500194077943506 -0.007500269456869411" range="0 1.919862" />
+                                  <geom class="plastic" name="Ring-PM_geom" type="mesh" mesh="Ring-PM" pos="0 0 0" euler="0 0 0" />
+                                  <inertial mass="0.020227223379927373" pos="-1.848580693918772e-07 0.0051958275794757175 -0.018718949490797335" fullinertia="1.9967071755994534e-06 2.0011051517932522e-06 8.144475144016588e-07 -8.221468843985106e-12 3.2138096393098035e-12 -1.716062450195736e-07" />
+                                  <body name="Ring-PD" pos="2.113864638886298e-15 0.005999999999999881 -0.030374007257448384" euler="-1.6658427567060916e-16 -5.828670879282087e-15 -1.1912163150416135e-16">
+                                    <joint class="jointconfig" name="Ring-PM_Ring-DIP-Flexion" type="hinge" axis="1.0000001561184741 1.922076924128159e-12 -8.852538432857493e-08" pos="0.0074997407780687895 -1.7943064091345823e-07 -0.005999871204416982" range="0 1.22173" />
+                                    <geom class="plastic" name="Ring-PD_geom" type="mesh" mesh="Ring-PD" pos="0 0 0" euler="0 0 0" />
+                                    <inertial mass="0.008221233655296712" pos="4.782563835709075e-06 -0.0010595201237615654 -0.014235123790328317" fullinertia="5.898243383363355e-07 6.159934754374612e-07 2.299508014361174e-07 -4.951643834537826e-11 -3.5190784669062244e-10 -5.015937733981168e-08" />
+                                  </body>
+                                </body>
+                              </body>
+                            </body>
+                            <body name="Little-MCP" pos="-0.15875085210786632 -0.16055826110610188 0.05208503902128425" euler="1.5708043887389316 0.610865238220759 3.1415926535897927">
+                              <joint class="jointconfig" name="Palm_Little-MCP-Flexion" type="hinge" axis="0.9999997134398921 3.2678340827589636e-12 -3.320347174984306e-07" pos="-0.1909997506940443 0.008500175115955124 -0.05328193162573373" range="-0.523599 1.570796" />
+                              <geom class="plastic" name="Little-MCP_geom" type="mesh" mesh="Little-MCP" pos="0 0 0" euler="0 0 0" />
+                              <inertial mass="0.005036994326199342" pos="-0.20000003939517627 0.007717264009985934 -0.052382454538954584" fullinertia="1.2970868632661083e-07 1.6007173878179342e-07 1.5900576781231374e-07 1.9696272214941319e-13 -5.666084463200185e-13 -1.4577138745881507e-08" />
+                              <body name="Little-PP" pos="-0.1999099137026218 -8.975787161693339e-05 -0.09186663199430449" euler="1.5707964398014929 -1.5032014194049508e-15 3.1415926535897922">
+                                <joint class="jointconfig" name="Little-MCP_Little-MCP-Abduction" type="hinge" axis="-8.52921952787522e-08 -0.500000033298895 0.8660248644462071" pos="9.032653567493665e-05 -0.03683471032494446 -0.011620954373351812" range="-0.610865 0.610865" />
+                                <geom class="plastic" name="Little-PP_geom" type="mesh" mesh="Little-PP" pos="0 0 0" euler="0 0 0" />
+                                <inertial mass="0.03708856624254697" pos="9.030301616387224e-05 -0.014531198977560398 -0.005880351460123711" fullinertia="5.7536399126192465e-06 2.3941975919822128e-06 5.462290746232142e-06 -1.8478345201614616e-10 -9.17326837131716e-11 -6.42580836388941e-07" />
+                                <body name="Little-PM" pos="9.008629737948581e-05 0.0006333688633876734 -8.975695249266335e-05" euler="1.5707963267948961 3.108624468950432e-15 3.141592653589793">
+                                  <joint class="jointconfig" name="Little-PP_Little-PIP-Flexion" type="hinge" axis="0.9999997134398901 3.232061225948125e-12 -3.3203471960785436e-07" pos="0.00900005084200259 0.007499634902912834 -0.007499625246447951" range="0 1.919862" />
+                                  <geom class="plastic" name="Little-PM_geom" type="mesh" mesh="Little-PM" pos="0 0 0" euler="0 0 0" />
+                                  <inertial mass="0.020227223379927373" pos="-1.8485806939708138e-07 0.005195827579475688 -0.01871894949079721" fullinertia="1.9967071755988914e-06 2.0011051517922976e-06 8.144475144015422e-07 -8.221468839812521e-12 3.2138098415389197e-12 -1.7160624501956656e-07" />
+                                  <body name="Little-PD" pos="1.8474111129762605e-15 0.005999999999999897 -0.030374007257449237" euler="4.161981089628736e-17 -5.995204332975853e-15 6.189413741188206e-16">
+                                    <joint class="jointconfig" name="Little-PM_Little-DIP-Flexion" type="hinge" axis="0.9999997134398901 3.23144228287994e-12 -3.320347256030587e-07" pos="0.007500029952810935 -8.418228709658533e-08 -0.006000154141074002" range="0 1.22173" />
+                                    <geom class="plastic" name="Little-PD_geom" type="mesh" mesh="Little-PD" pos="0 0 0" euler="0 0 0" />
+                                    <inertial mass="0.008221233655296712" pos="4.78256383570734e-06 -0.001059520123761557 -0.014235123790328267" fullinertia="5.898243383361532e-07 6.159934754376649e-07 2.2995080143613193e-07 -4.951643834013244e-11 -3.519078466670908e-10 -5.015937733978922e-08" />
+                                  </body>
+                                </body>
+                              </body>
+                            </body>
+                          </body>
+                        </body>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <contact>
+    <exclude name="Wrist_Forearm-exclude" body1="Wrist" body2="Forearm" />
+    <exclude name="Palm_Forearm-exclude" body1="Palm" body2="Forearm" />
+    <exclude name="Thumb-PP-exclude" body1="Thumb-PP" body2="Palm" />
+    <exclude name="Index-PP-exclude" body1="Index-PP" body2="Palm" />
+    <exclude name="Middle-PP-exclude" body1="Middle-PP" body2="Palm" />
+    <exclude name="Ring-PP-exclude" body1="Ring-PP" body2="Palm" />
+    <exclude name="Little-PP-exclude" body1="Little-PP" body2="Palm" />
+  </contact>
+  <actuator>
+    <motor class="panda" name="actuator1" joint="joint1" ctrlrange="-87 87" />
+    <motor class="panda" name="actuator2" joint="joint2" ctrlrange="-87 87" />
+    <motor class="panda" name="actuator3" joint="joint3" ctrlrange="-87 87" />
+    <motor class="panda" name="actuator4" joint="joint4" ctrlrange="-87 87" />
+    <motor class="panda" name="actuator5" joint="joint5" ctrlrange="-12 12" />
+    <motor class="panda" name="actuator6" joint="joint6" ctrlrange="-12 12" />
+    <motor class="panda" name="actuator7" joint="joint7" ctrlrange="-12 12" />
+    <position name="Wrist" joint="Forearm_Wrist-Flexion" ctrlrange="-1.047198 1.047198" kp="50" forcerange="-500 500" />
+    <position name="Palm" joint="Wrist_Wrist-Abduction" ctrlrange="-0.523598776 0.523598776" kp="50" forcerange="-500 500" />
+    <position class="MCPCtrl" name="Thumb-MCP" joint="Palm_Thumb-MCP-Flexion" kp="1.0" kv="0.1" />
+    <position class="MCP2Ctrl" name="Thumb-PP" joint="Thumb-MCP_Thumb-MCP-Abduction" kp="1.0" kv="0.1" />
+    <position class="PIPCtrl" name="Thumb-PM" joint="Thumb-PP_Thumb-PIP-Flexion" kp="1.0" kv="0.1" />
+    <position class="DIPCtrl" name="Thumb-PD" joint="Thumb-PM_Thumb-DIP-Flexion" kp="1.0" kv="0.1" />
+    <position class="MCPCtrl" name="Index-MCP" joint="Palm_Index-MCP-Flexion" />
+    <position class="MCP2Ctrl" name="Index-PP" joint="Index-MCP_Index-MCP-Abduction" />
+    <position class="PIPCtrl" name="Index-PM" joint="Index-PP_Index-PIP-Flexion" />
+    <position class="DIPCtrl" name="Index-PD" joint="Index-PM_Index-DIP-Flexion" />
+    <position class="MCPCtrl" name="Middle-MCP" joint="Palm_Middle-MCP-Flexion" />
+    <position class="MCP2Ctrl" name="Middle-PP" joint="Middle-MCP_Middle-MCP-Abduction" />
+    <position class="PIPCtrl" name="Middle-PM" joint="Middle-PP_Middle-PIP-Flexion" />
+    <position class="DIPCtrl" name="Middle-PD" joint="Middle-PM_Middle-DIP-Flexion" />
+    <position class="MCPCtrl" name="Ring-MCP" joint="Palm_Ring-MCP-Flexion" />
+    <position class="MCP2Ctrl" name="Ring-PP" joint="Ring-MCP_Ring-MCP-Abduction" />
+    <position class="PIPCtrl" name="Ring-PM" joint="Ring-PP_Ring-PIP-Flexion" />
+    <position class="DIPCtrl" name="Ring-PD" joint="Ring-PM_Ring-DIP-Flexion" />
+    <position class="MCPCtrl" name="Little-MCP" joint="Palm_Little-MCP-Flexion" />
+    <position class="MCP2Ctrl" name="Little-PP" joint="Little-MCP_Little-MCP-Abduction" />
+    <position class="PIPCtrl" name="Little-PM" joint="Little-PP_Little-PIP-Flexion" />
+    <position class="DIPCtrl" name="Little-PD" joint="Little-PM_Little-DIP-Flexion" />
+  </actuator>
+  <sensor>
+    <jointpos name="panda/joint1_pos" joint="joint1" />
+    <jointpos name="panda/joint2_pos" joint="joint2" />
+    <jointpos name="panda/joint3_pos" joint="joint3" />
+    <jointpos name="panda/joint4_pos" joint="joint4" />
+    <jointpos name="panda/joint5_pos" joint="joint5" />
+    <jointpos name="panda/joint6_pos" joint="joint6" />
+    <jointpos name="panda/joint7_pos" joint="joint7" />
+    <jointvel name="panda/joint1_vel" joint="joint1" />
+    <jointvel name="panda/joint2_vel" joint="joint2" />
+    <jointvel name="panda/joint3_vel" joint="joint3" />
+    <jointvel name="panda/joint4_vel" joint="joint4" />
+    <jointvel name="panda/joint5_vel" joint="joint5" />
+    <jointvel name="panda/joint6_vel" joint="joint6" />
+    <jointvel name="panda/joint7_vel" joint="joint7" />
+    <torque name="panda/joint1_torque" site="joint1" />
+    <torque name="panda/joint2_torque" site="joint2" />
+    <torque name="panda/joint3_torque" site="joint3" />
+    <torque name="panda/joint4_torque" site="joint4" />
+    <torque name="panda/joint5_torque" site="joint5" />
+    <torque name="panda/joint6_torque" site="joint6" />
+    <torque name="panda/joint7_torque" site="joint7" />
+    <force name="panda/wrist_force" site="attachment_site" />
+    <jointpos name="joint1_pos" joint="joint1" />
+    <jointpos name="joint2_pos" joint="joint2" />
+    <jointpos name="joint3_pos" joint="joint3" />
+    <jointpos name="joint4_pos" joint="joint4" />
+    <jointpos name="joint5_pos" joint="joint5" />
+    <jointpos name="joint6_pos" joint="joint6" />
+    <jointpos name="joint7_pos" joint="joint7" />
+    <jointpos name="Forearm_Wrist-Flexion_pos" joint="Forearm_Wrist-Flexion" />
+    <jointpos name="Wrist_Wrist-Abduction_pos" joint="Wrist_Wrist-Abduction" />
+    <jointpos name="Palm_Thumb-MCP-Flexion_pos" joint="Palm_Thumb-MCP-Flexion" />
+    <jointpos name="Thumb-MCP_Thumb-MCP-Abduction_pos" joint="Thumb-MCP_Thumb-MCP-Abduction" />
+    <jointpos name="Thumb-PP_Thumb-PIP-Flexion_pos" joint="Thumb-PP_Thumb-PIP-Flexion" />
+    <jointpos name="Thumb-PM_Thumb-DIP-Flexion_pos" joint="Thumb-PM_Thumb-DIP-Flexion" />
+    <jointpos name="Palm_Index-MCP-Flexion_pos" joint="Palm_Index-MCP-Flexion" />
+    <jointpos name="Index-MCP_Index-MCP-Abduction_pos" joint="Index-MCP_Index-MCP-Abduction" />
+    <jointpos name="Index-PP_Index-PIP-Flexion_pos" joint="Index-PP_Index-PIP-Flexion" />
+    <jointpos name="Index-PM_Index-DIP-Flexion_pos" joint="Index-PM_Index-DIP-Flexion" />
+    <jointpos name="Palm_Middle-MCP-Flexion_pos" joint="Palm_Middle-MCP-Flexion" />
+    <jointpos name="Middle-MCP_Middle-MCP-Abduction_pos" joint="Middle-MCP_Middle-MCP-Abduction" />
+    <jointpos name="Middle-PP_Middle-PIP-Flexion_pos" joint="Middle-PP_Middle-PIP-Flexion" />
+    <jointpos name="Middle-PM_Middle-DIP-Flexion_pos" joint="Middle-PM_Middle-DIP-Flexion" />
+    <jointpos name="Palm_Ring-MCP-Flexion_pos" joint="Palm_Ring-MCP-Flexion" />
+    <jointpos name="Ring-MCP_Ring-MCP-Abduction_pos" joint="Ring-MCP_Ring-MCP-Abduction" />
+    <jointpos name="Ring-PP_Ring-PIP-Flexion_pos" joint="Ring-PP_Ring-PIP-Flexion" />
+    <jointpos name="Ring-PM_Ring-DIP-Flexion_pos" joint="Ring-PM_Ring-DIP-Flexion" />
+    <jointpos name="Palm_Little-MCP-Flexion_pos" joint="Palm_Little-MCP-Flexion" />
+    <jointpos name="Little-MCP_Little-MCP-Abduction_pos" joint="Little-MCP_Little-MCP-Abduction" />
+    <jointpos name="Little-PP_Little-PIP-Flexion_pos" joint="Little-PP_Little-PIP-Flexion" />
+    <jointpos name="Little-PM_Little-DIP-Flexion_pos" joint="Little-PM_Little-DIP-Flexion" />
+  </sensor>
+</mujoco>

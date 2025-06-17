@@ -1,0 +1,75 @@
+<mujoco model="Arena">
+  <include file="panda_dex.xml"/>
+
+  <option timestep=".003" gravity="0 0 0"/>
+
+  <statistic center="0.3 0 0.4" extent=".8"/>
+
+  <visual>
+    <headlight diffuse=".4 .4 .4" ambient=".5 .5 .5"/>
+    <global azimuth="160" elevation="-20" offheight="128" offwidth="128"/>
+    <quality offsamples="8"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1=".3 .5 .7" rgb2="0 0 0" width="32" height="512"/>
+    <texture name="grid" type="2d" builtin="checker" width="512" height="512" rgb1=".1 .2 .3" rgb2=".2 .3 .4"/>
+    <!-- <texture name="grid" type="2d" builtin="checker" width="512" height="512" rgb1="0 0 0" rgb2="0 0 0"/> -->
+    <material name="grid" texture="grid" texrepeat="2 2" texuniform="true" reflectance="0"/>
+  </asset>
+
+  <worldbody>
+    <camera name="cam_front" pos="2.134 0.005 1.086" xyaxes="-0.003 1.000 -0.000 -0.295 -0.001 0.955" fovy="60"/>
+    <site name="cam_front" type="cylinder" pos="2.134 0.005 1.086" xyaxes="-0.003 1.000 -0.000 -0.295 -0.001 0.955" size=".005 .05" rgba=".3 .3 .3 .3"/>
+    <camera name="cam_right" pos="0.296 1.257 0.810" xyaxes="-1.000 0.008 0.000 -0.002 -0.224 0.975" fovy="60"/>
+    <site name="cam_right" type="cylinder" pos="0.296 1.257 0.810" xyaxes="-1.000 0.008 0.000 -0.002 -0.224 0.975" size=".005 .05" rgba=".3 .3 .3 .3"/>
+    <camera name="cam_up" pos="0.346 0.000 3.037" xyaxes="-0.004 1.000 -0.000 -1.000 -0.004 0.017" fovy="60"/>
+
+    <light pos="0 0 3" dir="0 0 -1" diffuse="1 1 1" specular=".3 .3 .3"/>
+    <light pos="0 -.5 .4" mode="targetbodycom" target="block" diffuse=".8 .8 .8" specular=".3 .3 .3"/>
+    <geom name="floor" pos="0 0 0" size="30 30 0.01" type="plane" material="grid"/>
+
+    <!-- <body name="block" pos="0.24 -0.01 0.15" euler="0 0 0"> -->
+    <body name="block" pos="0.5 -0.01 0.15" euler="0 0 0">
+      <freejoint name="block"/>
+      <geom name="block" type="box" size=".018 .018 .018" mass="0.02" rgba=".6 .3 .6 1" friction="0.05 0.05 0.05"/>
+      <site name="block_x" type="cylinder" pos=".05 0 0" euler="0 1.5707963267948966 0" size=".005 .05" rgba=".5 0 0 .1"/>
+      <site name="block_y" type="cylinder" pos="0 .05 0" euler="1.5707963267948966 0 0" size=".005 .05" rgba="0 .5 0 .1"/>
+      <site name="block_z" type="cylinder" pos="0 0 .05" euler="0 0 0" size=".005 .05" rgba="0 0 .5 .1"/>
+    </body>
+
+    <body name="target" mocap="true" pos="0.5 -0.01 .5" euler="0 0 0">
+    <!-- <body name="target" mocap="true" pos="0.3 0.4 .5" euler="0 0 0"> -->
+      <site type="sphere" pos="0 0 0" size=".01" rgba=".6 .3 .6 .5"/>
+      <site name="target_z" type="cylinder" pos="0 0 0.05" euler="0 0 0" size=".005 .05" rgba=".3 .3 .8 .3"/>
+      <site name="target_x" type="cylinder" pos="0.05 0 0" euler="0 1.5707963267948966 0" size=".005 .05" rgba=".8 .3 .3 .3"/>
+      <site name="target_y" type="cylinder" pos="0 0.05 0" euler="1.5707963267948966 0 0" size=".005 .05" rgba=".3 .8 .3 .3"/>
+      <site name="target" type="box" size=".028 .028 .028" rgba=".6 .3 .3 0.3"/>
+    </body>
+    
+  </worldbody>
+
+  <sensor>
+    <framepos name="block_pos" objtype="body" objname="block"/>
+    <framequat name="block_quat" objtype="body" objname="block"/>
+    <framepos name="target_pos" objtype="body" objname="target"/>
+    <framequat name="target_quat" objtype="body" objname="target"/>
+  </sensor>
+
+    <!-- 0 0 0 -0.25 -0.2 1 1.95 -->
+  <keyframe>
+    <key name="init_state" 
+    qpos="  0 0 0 -0.25 -0.2 1 0.6
+            0 0 0 0 0 0 0
+            0 0 0 0 0 0 0
+            0 0 0 0 0 0 0
+            0 
+            0.5 0 0 0 0 0 0"
+    
+    ctrl="  0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0
+            0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0"
+    />
+  </keyframe>
+</mujoco>

@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "/home/jzq/github/dex-serl/serl_launcher",
+        "./examples/async_sac_state_sim_dphand"
+    ]
+}

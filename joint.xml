@@ -1,0 +1,34 @@
+  <sensor>
+    <jointpos name="panda/joint1_pos" joint="joint1"/>
+    <jointpos name="panda/joint2_pos" joint="joint2"/>
+    <jointpos name="panda/joint3_pos" joint="joint3"/>
+    <jointpos name="panda/joint4_pos" joint="joint4"/>
+    <jointpos name="panda/joint5_pos" joint="joint5"/>
+    <jointpos name="panda/joint6_pos" joint="joint6"/>
+    <jointpos name="panda/joint7_pos" joint="joint7"/>
+
+    <jointvel name="panda/joint1_vel" joint="joint1"/>
+    <jointvel name="panda/joint2_vel" joint="joint2"/>
+    <jointvel name="panda/joint3_vel" joint="joint3"/>
+    <jointvel name="panda/joint4_vel" joint="joint4"/>
+    <jointvel name="panda/joint5_vel" joint="joint5"/>
+    <jointvel name="panda/joint6_vel" joint="joint6"/>
+    <jointvel name="panda/joint7_vel" joint="joint7"/>
+
+    <torque name="panda/joint1_torque" site="joint1"/>
+    <torque name="panda/joint2_torque" site="joint2"/>
+    <torque name="panda/joint3_torque" site="joint3"/>
+    <torque name="panda/joint4_torque" site="joint4"/>
+    <torque name="panda/joint5_torque" site="joint5"/>
+    <torque name="panda/joint6_torque" site="joint6"/>
+    <torque name="panda/joint7_torque" site="joint7"/>
+
+    <force name="panda/wrist_force" site="attachment_site"/>
+
+    <!-- 灵巧手 -->
+
+    <jointpos name="Forearm_Wrist-Flexion" joint="Forearm_Wrist-Flexion"/>
+    <jointpos name="Wrist_Wrist-Abduction" joint="Wrist_Wrist-Abduction"/>
+    <jointpos name="panda/joint3_pos" joint=/>
+    
+  </sensor>
