@@ -47,7 +47,8 @@ class DphandFrankaFloatCubeEnv(MujocoGymEnv):
     def __init__(
             self, 
             config_path: str,
-            render_spec: GymRenderingSpec = GymRenderingSpec(),
+            action_scale: np.ndarray = np.asarray([0.1, 1]),
+            render_spec: GymRenderingSpec = GymRenderingSpec(height=800, width=512),
             IMAGES: bool = False,
             ):
         super().__init__(
@@ -60,6 +61,7 @@ class DphandFrankaFloatCubeEnv(MujocoGymEnv):
             self.cfg = yaml.safe_load(f)
         self.IMAGES = IMAGES
         self.render_spec = render_spec
+        self._action_scale = action_scale
 
         # 观测空间包括proprioception, image*2, touch(待加入)
         self.observation_space = spaces.Dict({
@@ -99,7 +101,6 @@ class DphandFrankaFloatCubeEnv(MujocoGymEnv):
                     )
             self.observation_space["images"] = spaces.Dict(image_dict)
             self.init_cameras(render_spec=render_spec)
-            self._get_im()
             self.imagedisplayer = ImageDisplayer(self.cap)
             self.imagedisplayer.start()
         else:
@@ -111,11 +112,29 @@ class DphandFrankaFloatCubeEnv(MujocoGymEnv):
                 height=960,
                 )
         
+        # Caching.
+        self._panda_dof_ids = np.asarray(
+            [self._model.joint(f"joint{i}").id for i in range(1, 8)]
+        )
+        self._panda_ctrl_ids = np.asarray(
+            [self._model.actuator(f"actuator{i}").id for i in range(1, 8)]
+        )
+        self._pinch_site_id = self._model.site("attachment_site").id
+        
+        _dphand_ctrl_ids = []
+        for sensor_id in range(self.model.nsensor):
+            sensor_name = self.model.sensor(sensor_id).name
+            if "dphand-" in sensor_name:
+                ctrl_id = self.model.joint(sensor_name.removeprefix("dphand-").removesuffix("_pos")).id
+                _dphand_ctrl_ids.append(ctrl_id)
+        self._dphand_ctrl_ids = np.asarray(_dphand_ctrl_ids)
+
+        print(f"arm dof ids {self._panda_dof_ids}, arm ctrl ids {self._panda_ctrl_ids}, dphand ctrl ids {self._dphand_ctrl_ids}")
         # 动作空间包括机械臂末端 + dphand（位置控制）
         self.action_space = spaces.Dict({
                 "tcp_pos": spaces.Box(
-                    low=np.asarray([-1]*7),
-                    high=np.asarray([1]*7),
+                    low=np.asarray([-10]*7),
+                    high=np.asarray([10]*7),
                     dtype = np.float32,
                 ),
                 'dphand_pos': spaces.Box(
@@ -140,27 +159,41 @@ class DphandFrankaFloatCubeEnv(MujocoGymEnv):
             truncated: bool,
             info: dict[str, Any]
         """
+
+        delta_tcp_pos = action[:3]
+        delta_tcp_quat = action[3:7]
+        
+        tcp_pos = self.data.sensor('tcp_pos').data
+        tcp_quat = self.data.sensor('tcp_quat').data
+
+        desired_tcp_pos = tcp_pos + delta_tcp_pos * self._action_scale[0]
+        desired_tcp_quat = tcp_quat + delta_tcp_quat * self._action_scale[0]
+
+        # franka 关节指令的发布
         # 从tcp pos，计算7维度的关节力指令：
+        tau = opspace(
+            model=self._model,
+            data=self.data,
+            joint=None,
+            site_id=self._pinch_site_id,
+            dof_ids=self._panda_dof_ids,
+            pos=desired_tcp_pos,
+            ori=desired_tcp_quat,
+            gravity_comp=False,
+        )
+        self.data.ctrl[self._panda_ctrl_ids] = tau
 
-        # tau = opspace(
-        #     model=self._model,
-        #     data=self._data,
-        #     site_id=self._pinch_site_id,
-        #     dof_ids=self._panda_dof_ids,
-        #     pos=self._data.mocap_pos[0],
-        #     ori=self._data.mocap_quat[0],
-        #     # joint=_PANDA_HOME,
-        #     gravity_comp=True,
-        # )
-        # self._data.ctrl[self._panda_ctrl_ids] = tau
+        # 灵巧手指令的发布，因为是pos所以简单很多
+        self.data.ctrl[self._dphand_ctrl_ids] = action[7:]
+
+        for _ in range(5):
+            self.data.ctrl += action
+            mujoco.mj_step(self.model, self.data)
+
         next_obs = {}
-        self.data.ctrl += action
-        mujoco.mj_step(self.model, self.data)
+        next_obs = self._compute_observation()  # 获取image以及可视化
 
-        # 计算observation。
-        if self.IMAGES:
-            self._get_im()  # 获取image以及可视化
-        else:
+        if not self.IMAGES:
             self.window.render(render_mode="human")  # 可视化
 
         # 计算reward
@@ -183,16 +216,15 @@ class DphandFrankaFloatCubeEnv(MujocoGymEnv):
     
     def _compute_observation(self) -> dict:
         obs = {}
-        
         # proprioception
         obs["state"] = {}
-        tcp_pos = self._data.sensor("tcp_pos").data
+        tcp_pos = self.data.sensor("tcp_pos").data
         obs["state"]["tcp_pos"] = tcp_pos.astype(np.float32)
-        tcp_quat = self._data.sensor("tcp_quat").data
+        tcp_quat = self.data.sensor("tcp_quat").data
         obs["state"]["tcp_quat"] = tcp_quat.astype(np.float32)
-        tcp_linvel = self._data.sensor("tcp_linvel").data
+        tcp_linvel = self.data.sensor("tcp_linvel").data
         obs["state"]["tcp_linvel"] = tcp_linvel.astype(np.float32)
-        tcp_angvel = self._data.sensor("tcp_angvel").data
+        tcp_angvel = self.data.sensor("tcp_angvel").data
         obs["state"]["tcp_angvel"] = tcp_angvel.astype(np.float32)
 
         # proprioception <- hand
@@ -200,11 +232,14 @@ class DphandFrankaFloatCubeEnv(MujocoGymEnv):
         for sensor_id in range(self.model.nsensor):
             sensor_name = self.model.sensor(sensor_id).name
             if "dphand-" in sensor_name:
-                dphand_this_pos = self._data.sensor(sensor_name).data
+                dphand_this_pos = self.data.sensor(sensor_name).data
                 dphand_pos.append(dphand_this_pos)
+        
         obs['state']['dphand_pos'] = np.concatenate(dphand_pos, axis=0).astype(np.float32)
 
         # block
+        self.block_pos = self.data.sensor('block_pos').data
+        self.block_quat = self.data.sensor('block_quat').data
         obs['block_pos'] = self.block_pos.astype(np.float32)
         obs['block_quat'] = self.block_quat.astype(np.float32)
 
@@ -287,12 +322,16 @@ if __name__ == "__main__":
     # i = 0
 
     while True:
-        env.step(
+        q = env.step(
             np.concatenate([
-                np.zeros(7,), 
-                np.random.uniform(-1,1,22)
+                np.asarray([1, 0, -1.5]),
+                np.zeros(26,), 
                 ])
             )
+        
+        # print(env.data.sensor('tcp_pos').data)
+        print(q)
+        # time.sleep(0.2)
         
         # if i >= 100:
         #     print(env._compute_observation())

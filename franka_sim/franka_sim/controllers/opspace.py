@@ -72,20 +72,32 @@ def opspace(
     max_ori_acceleration: Optional[float] = None,
     gravity_comp: bool = True,
 ) -> np.ndarray:
+    '''
+        take a step in the environment.
+        Params:
+            site_id: 末端site
+            dof_ids: franka关节1-7
+            pos,ori: 目标位姿
+            joint: 零空间控制时的偏好位姿。在不影响eef的前提下 机器人会尽量往这个位姿上靠。
+    '''
     if pos is None:
+        print("pos(desired) is none")
         x_des = data.site_xpos[site_id]
     else:
         x_des = np.asarray(pos)
     if ori is None:
+        print("quat(desired) is none")
         xmat = data.site_xmat[site_id].reshape((3, 3))
         quat_des = tr.mat_to_quat(xmat.reshape((3, 3)))
     else:
         ori = np.asarray(ori)
         if ori.shape == (3, 3):
+            print("mat(desire), not quat(desire)")
             quat_des = tr.mat_to_quat(ori)
         else:
             quat_des = ori
     if joint is None:
+        print("joint is none")
         q_des = data.qpos[dof_ids]
     else:
         q_des = np.asarray(joint)
