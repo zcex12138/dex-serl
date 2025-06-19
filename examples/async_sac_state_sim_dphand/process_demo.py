@@ -4,7 +4,7 @@ from pathlib import Path
 
 CUR_DIR = Path(__file__).parent
 
-f = open(CUR_DIR / "./dphand_20_demos_2025-06-18_17-12-34.pkl",'rb')
+f = open(CUR_DIR / "./dphand_20_demos_2025-06-16_15-31-27",'rb')
 data = pickle.load(f)
 
 cnt = 0

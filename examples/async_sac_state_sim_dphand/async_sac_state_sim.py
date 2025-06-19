@@ -27,6 +27,7 @@ from serl_launcher.wrappers.fix6dpose import Fix6DPoseWrapper
 from serl_launcher.agents.continuous.sac import SACAgent
 from serl_launcher.common.evaluation import evaluate
 from serl_launcher.utils.timer_utils import Timer
+from serl_launcher.utils.train_utils import concat_batches
 
 from serl_launcher.data.data_store import ReplayBufferDataStore
 
@@ -249,7 +250,7 @@ def learner(
     # create replay buffer iterator
     replay_iterator = replay_buffer.get_iterator(
         sample_args={
-            "batch_size": FLAGS.batch_size * FLAGS.critic_actor_ratio,
+            "batch_size": single_buffer_batch_size,
         },
         device=sharding.replicate(),
     )
@@ -265,15 +266,30 @@ def learner(
     )
 
     for step in tqdm.tqdm(range(FLAGS.max_steps), dynamic_ncols=True, desc="learner"):
-        # Train the networks
-        with timer.context("sample_replay_buffer"):
-            batch = next(replay_iterator)
+        # run n-1 critic updates and 1 critic + actor update.
+        # This makes training on GPU faster by reducing the large batch transfer time from CPU to GPU
+        for critic_step in range(FLAGS.critic_actor_ratio - 1):
+            with timer.context("sample_replay_buffer"):
+                batch = next(replay_iterator)
+
+                # we will concatenate the demo data with the online data
+                # if demo_buffer is provided
+                if demo_iterator is not None:
+                    demo_batch = next(demo_iterator)
+                    batch = concat_batches(batch, demo_batch, axis=0)
 
         with timer.context("train"):
+            batch = next(replay_iterator)
+            # we will concatenate the demo data with the online data
+            # if demo_buffer is provided
+            if demo_iterator is not None:
+                demo_batch = next(demo_iterator)
+                batch = concat_batches(batch, demo_batch, axis=0)
             agent, update_info = agent.update_high_utd(batch, utd_ratio=FLAGS.utd_ratio)
-            agent = jax.block_until_ready(agent)
 
-            # publish the updated network
+        # publish the updated network
+        if step > 0 and step % (FLAGS.steps_per_update) == 0:
+            agent = jax.block_until_ready(agent)
             server.publish_network(agent.state.params)
 
         if update_steps % FLAGS.log_period == 0 and wandb_logger:
@@ -283,13 +299,15 @@ def learner(
         if FLAGS.checkpoint_period and update_steps % FLAGS.checkpoint_period == 0:
             assert FLAGS.checkpoint_path is not None
             checkpoints.save_checkpoint(
-                FLAGS.checkpoint_path, agent.state, step=update_steps, keep=20
+                FLAGS.checkpoint_path, agent.state, step=update_steps, keep=5
             )
 
         pbar.update(len(replay_buffer) - pbar.n)  # update replay buffer bar
         update_steps += 1
 
-def player(agent: SACAgent, data_store, env, sampling_rng):
+##############################################################################
+
+def player(agent: SACAgent, env, sampling_rng):
     """
     This is the actor loop, which runs when "--actor" is set to True.
     """
@@ -297,15 +315,19 @@ def player(agent: SACAgent, data_store, env, sampling_rng):
     time_list = []
 
     ckpt = checkpoints.restore_checkpoint(
-        FLAGS.checkpoint_path, target=None, step=None
+        FLAGS.checkpoint_path, agent.state, step=None
     )
 
     agent = agent.replace(state=ckpt)
+
     for episode in range(FLAGS.eval_n_trajs):
         obs, _ = env.reset()
         done = False
         start_time = time.time()
+        cnt = 0
         while not done:
+            cnt += 1
+            data_time_left = env.data.time
             actions = agent.sample_actions(
                 observations=jax.device_put(obs),
                 argmax=True,
@@ -314,16 +336,18 @@ def player(agent: SACAgent, data_store, env, sampling_rng):
 
             next_obs, reward, done, truncated, info = env.step(actions)
             obs = next_obs
-
+            real_time = time.time() - start_time
+            time.sleep(max(0, env.data.time - real_time))
+            print("physics_fps:" , cnt / real_time)
             if done:
                 if reward:
                     dt = time.time() - start_time
                     time_list.append(dt)
-                    print(dt)
+                    # print(dt)
 
                 success_counter += reward
-                print(reward)
-                print(f"{success_counter}/{episode + 1}")
+                # print(reward)
+                # print(f"{success_counter}/{episode + 1}")
 
     print(f"success rate: {success_counter / FLAGS.eval_n_trajs}")
     print(f"average time: {np.mean(time_list)}")
@@ -341,6 +365,7 @@ def main(_):
         env = gym.make(FLAGS.env, render_mode="human")
     else:
         env = gym.make(FLAGS.env)
+        
     if FLAGS.env == "DphandPickCube-v0":
         env = gym.wrappers.FlattenObservation(
             Fix6DPoseWrapper(env, pose=[0, 0, 0.3, -1.5707, 1.5707, 0])
@@ -399,6 +424,7 @@ def main(_):
                 with open(FLAGS.demo_path, "rb") as f:
                     trajs = pkl.load(f)
                     for traj in trajs:
+                        # del traj['replaced']
                         demo_buffer.insert(traj)
 
             print(f"demo buffer size: {len(demo_buffer)}")
@@ -425,10 +451,9 @@ def main(_):
 
     elif FLAGS.player:
         sampling_rng = jax.device_put(sampling_rng, sharding.replicate())
-        data_store = QueuedDataStore(2000)
         # player loop
         print_green("starting player loop")
-        player(agent, data_store, env, sampling_rng)
+        player(agent, env, sampling_rng)
     else:
         raise NotImplementedError("Must be either a learner or an actor")
 

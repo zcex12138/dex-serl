@@ -18,21 +18,22 @@ else:
 
 from franka_sim.controllers import opspace
 from franka_sim.mujoco_gym_env import GymRenderingSpec, MujocoGymEnv_v2
+from franka_sim.envs.render import Viewer
 
 _HERE = Path(__file__).parent
 _XML_PATH = _HERE / "xmls" / "dphand" /"dphand_arena.xml"
 
 class DphandPickCubeGymEnv(MujocoGymEnv_v2):
-    metadata = {"render_modes": ["human", "rgb_array", "depth_array"], "render_fps": 50}
+    metadata = {"render_modes": ["human", "rgb_array", "depth_array"], "render_fps": 100}
 
     def __init__(
         self,
         config_path: str,
         seed: int = 0,
-        control_dt: float = 0.02, # n-substeps = control_dt / physics_dt
+        control_dt: float = 0.01, # n-substeps = control_dt / physics_dt
         physics_dt: float = 0.002, # dt
         render_spec: GymRenderingSpec = GymRenderingSpec(),
-        render_mode: Literal["rgb_array", "human"] = "rgb_array",
+        render_mode: Literal["rgb_array", "human"] = "human",
         image_obs: bool = False,
     ):
         # config
@@ -49,21 +50,21 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
         )
 
         self.render_mode = render_mode
-        self.camera_id = (0 ,1)
+        self.cam_names = ["front", "fixed_cam"]
+        self.cam_ids = dict({
+            cam_name: self.model.camera(cam_name).id for cam_name in self.cam_names
+        })
         self.image_obs = image_obs
 
-        # NOTE: gymnasium is used here since MujocoRenderer is not available in gym. It
-        # is possible to add a similar viewer feature with gym, but that can be a future TODO
-        from gymnasium.envs.mujoco.mujoco_rendering import MujocoRenderer
-
-        self._viewer = MujocoRenderer(
+        # Viewer
+        self._viewer = Viewer(
             self.model,
             self.data,
-            width=render_spec.width,
-            height=render_spec.height,
+            width=render_spec.viewer_width,
+            height=render_spec.viewer_height,
+            img_obs_width=render_spec.width,
+            img_obs_height=render_spec.height,
             )
-        self._viewer.render(self.render_mode)
-
 
         # store
         self._obs = None
@@ -201,15 +202,6 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
         self._rew, terminated, trucated, info = self._get_reward(self._obs, np.asarray(action))
         return self._obs, self._rew, terminated, trucated, info
 
-    def render(self):
-        rendered_frames = []
-        for cam_id in self.camera_id:
-            rendered_frames.append(
-                self._viewer.render(render_mode="rgb_array")
-            )
-        
-        return rendered_frames
-
     # Helper methods.
 
     def _compute_observation(self) -> dict:
@@ -223,15 +215,14 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
         if self.image_obs:
             obs["images"] = {}
 
-            obs["images"]["front"], obs["images"]["wrist"] = self.render()
+            obs["images"]["front"] = self._viewer.render_rgb_cam("rgb_array", self.cam_ids["front"])
+            obs["images"]["wrist"] = self._viewer.render_rgb_cam("rgb_array", self.cam_ids["fixed_cam"])
+
             obs["state"]["block_pos"] = self.data.sensor("block_pos").data.astype(np.float32)
             obs["state"]["block_rot"] = self.data.sensor("block_quat").data.astype(np.float32)
         else:
             obs["state"]["block_pos"] = self.data.sensor("block_pos").data.astype(np.float32)
             obs["state"]["block_rot"] = self.data.sensor("block_quat").data.astype(np.float32)
-
-        if self.render_mode == "human":
-            self._viewer.render(self.render_mode)
 
         return obs
 
@@ -294,22 +285,29 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
 
         return reward, terminated, trucated, {'success': success}
     
+    def render(self):
+        if self.render_mode == "human":
+            self._viewer.render()
+        elif self.render_mode == "rgb_array":
+            return self._viewer.render_rgb_cam("rgb_array", -1)
+    
 if __name__ == "__main__":
     import franka_sim
     from serl_launcher.wrappers.dphand_wrappers import Fix6DPoseWrapper, TeleopIntervention
     # env = gym.make("DphandPickCube-v0", render_mode="human", )
-    env = gym.make("DphandPickCubeVision-v0", render_mode="human", )
+    env = gym.make("DphandPickCube-v0", render_mode="human", image_obs=True)
     env = gym.wrappers.FlattenObservation(env)
-    env = TeleopIntervention(env, ip="192.168.3.44", test=True)
+    # env = TeleopIntervention(env, ip="192.168.3.44", test=True)
     env = Fix6DPoseWrapper(env, pose=[0, 0, 0.3, -1.5707, 1.5707, 0])
     obs, _ = env.reset()
     import time
-    start_time = time.time()
     # env._viewer.viewer.vopt.frame = mujoco.mjtFrame.mjFRAME_SITE
     flag = True
     cnt = 0
     import cv2
+    start_time = time.time()
     while True:
+        data_time_left = env.data.time
         cnt += 1
         if cnt % 100 == 0:
             flag = not flag
@@ -320,16 +318,22 @@ if __name__ == "__main__":
         #                         size=env.action_space.shape)
         obs, reward, done, truncated, info = env.step(action)
         obs_unflatten = env.unwrapped._obs
-        image = np.hstack(
-            [obs_unflatten["images"]["front"], obs_unflatten["images"]["wrist"]]
-        )
-        cv2.imshow("image_obs", image)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        if env.image_obs:
+            image = np.hstack(
+                [obs_unflatten["images"]["front"], obs_unflatten["images"]["wrist"]]
+            )
+            cv2.imshow("image_obs", image)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
         # reset
-        if truncated:
-            obs, _ = env.reset()
+        # if done | truncated:
+        #     print(env.data.time)
+        #     obs, _ = env.reset()
+        #     start_time = time.time()
+
         env.render()
         real_time = time.time() - start_time
+        # print("physics_fps:" , cnt / real_time)
+        # print(env.data.time - real_time)
         time.sleep(max(0, env.data.time - real_time))
     env.close()

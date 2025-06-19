@@ -39,12 +39,36 @@
                 "--training_starts", "1000",
                 "--critic_actor_ratio", "8",
                 "--batch_size", "64",
+                "--checkpoint_period", "50000",
+                "--checkpoint_path", "/home/yhx/workspace/serl/examples/async_sac_state_sim_dphand/checkpoints/latest",
+                "--demo_path", "/home/yhx/workspace/serl/examples/async_sac_state_sim_dphand/dphand_20_demos_2025-06-16_15-31-27.pkl",
                 "--debug" // wandb is disabled when debug
             ],
             "env": {
                 "XLA_PYTHON_CLIENT_PREALLOCATE": "false",
                 "XLA_PYTHON_CLIENT_MEM_FRACTION": ".05",
             },
-        }
+        },
+
+        {
+            "name": "player",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/async_sac_state_sim_dphand/async_sac_state_sim.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--player",
+                "--render",
+                "--env", "DphandPickCube-v0",
+                "--seed", "0",
+                "--eval_n_trajs", "100",
+                "--checkpoint_path", "/home/yhx/workspace/serl/examples/async_sac_state_sim_dphand/checkpoints/latest/",
+                "--debug"
+            ],
+            "env": {
+                "XLA_PYTHON_CLIENT_PREALLOCATE": "false",
+                "XLA_PYTHON_CLIENT_MEM_FRACTION": ".05",
+            },
+        },
     ]
 }

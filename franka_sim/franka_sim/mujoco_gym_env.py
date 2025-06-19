@@ -12,10 +12,10 @@ import numpy as np
 
 @dataclass(frozen=True)
 class GymRenderingSpec:
-    # height: int = 128
-    # width: int = 128
-    height: int = 2048
-    width: int = 2048
+    height: int = 128
+    width: int = 128
+    viewer_height: int = 960
+    viewer_width: int = 1280
     camera_id: str | int = -1
     mode: Literal["rgb_array", "human"] = "rgb_array"
 
@@ -101,8 +101,8 @@ class MujocoGymEnv_v2(gym.envs.mujoco.mujoco_env.MujocoEnv):
                          observation_space=None, 
                          render_mode=render_spec.mode
                         )
-        self.model.vis.global_.offwidth = render_spec.width
-        self.model.vis.global_.offheight = render_spec.height
+        # self.model.vis.global_.offwidth = render_spec.width
+        # self.model.vis.global_.offheight = render_spec.height
         self.model.opt.timestep = physics_dt
         self._control_dt = control_dt
         self._time_limit = time_limit

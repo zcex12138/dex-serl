@@ -8,6 +8,7 @@ from jax import numpy as jnp
 from gym import spaces
 from franka_sim.envs.utils import *
 import yaml
+from threading import Thread
 
 try:
     import mujoco_py
@@ -69,8 +70,9 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
         # if self.image_obs:
         #     self.obs_render = RenderContextOffscreen(self.model, self.data)
         
+
         self.obs_render = self._get_viewer("rgb_array")
-        self.viewer = self._get_viewer("human")
+        # self.obs_render.render(1)
 
         
         # store
@@ -299,7 +301,7 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
         return reward, terminated, trucated, {'success': success}
     
     def render(self):
-        self._get_viewer(mode=self.render_mode).render()
+        pass
     
 if __name__ == "__main__":
     import franka_sim

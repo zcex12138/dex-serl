@@ -306,10 +306,10 @@
         <position name="Wrist" joint="Forearm_Wrist-Flexion" ctrlrange="-1.047198 1.047198" kp="50" forcerange="-500 500" />
         <position name="Palm" joint="Wrist_Wrist-Abduction" ctrlrange="-0.523598776 0.523598776" kp="50" forcerange="-500 500" />
         
-        <position class="MCPCtrl"  name="Thumb-MCP" joint="Palm_Thumb-MCP-Flexion" kp="1.0" kv="0.1"/>
-        <position class="MCP2Ctrl"  name="Thumb-PP" joint="Thumb-MCP_Thumb-MCP-Abduction" kp="1.0" kv="0.1"/>
-        <position class="PIPCtrl"  name="Thumb-PM" joint="Thumb-PP_Thumb-PIP-Flexion" kp="1.0" kv="0.1"/>
-        <position class="DIPCtrl"  name="Thumb-PD" joint="Thumb-PM_Thumb-DIP-Flexion" kp="1.0" kv="0.1"/>
+        <position class="MCPCtrl"  name="Thumb-MCP" joint="Palm_Thumb-MCP-Flexion" kp="1.5" kv="0.2"/>
+        <position class="MCP2Ctrl"  name="Thumb-PP" joint="Thumb-MCP_Thumb-MCP-Abduction" kp="1.5" kv="0.2"/>
+        <position class="PIPCtrl"  name="Thumb-PM" joint="Thumb-PP_Thumb-PIP-Flexion" kp="1.5" kv="0.2"/>
+        <position class="DIPCtrl"  name="Thumb-PD" joint="Thumb-PM_Thumb-DIP-Flexion" kp="1.5" kv="0.2"/>
         
         <position class="MCPCtrl"  name="Index-MCP" joint="Palm_Index-MCP-Flexion" />
         <position class="MCP2Ctrl" name="Index-PP" joint="Index-MCP_Index-MCP-Abduction"  />

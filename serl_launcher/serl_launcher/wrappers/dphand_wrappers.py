@@ -3,7 +3,7 @@ import gym.spaces
 import numpy as np
 from pynput import keyboard
 
-from serl_launcher.dphand_teleop.dphand_teleoperator import DPhandTeleoperator
+from dphand_teleop.dphand_teleoperator import DPhandTeleoperator
 import mujoco
 
 class Fix6DPoseWrapper(gym.ActionWrapper):
@@ -30,7 +30,7 @@ class Fix6DPoseWrapper(gym.ActionWrapper):
     
     def step(self, action):
         obs, rew, done, truncated, info = self.env.step(self.action(action))
-        info["action"] = info["action"][6:]  # Keep only the action part that is not fixed
+        # info["action"] = info["action"][6:]  # Keep only the action part that is not fixed
         return obs, rew, done, truncated, info
 
 class TeleopIntervention(gym.Wrapper):

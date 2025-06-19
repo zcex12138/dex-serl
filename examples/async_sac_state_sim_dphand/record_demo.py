@@ -33,7 +33,8 @@ if __name__ == "__main__":
     success_count = 0
     total_count = 0
 
-
+    import time
+    start_time = time.time()
     start = False
     while env.keyboard != "esc":
         if start == False and env.keyboard == "enter":
@@ -43,14 +44,12 @@ if __name__ == "__main__":
             print("Start recording demos.\n Please press 'r' to reset recording or 'enter' to finish recording.\n")
         elif start == True:
             actions = info["action"]
-            replace = info["replaced"]
             transition = copy.deepcopy(
                 dict(
                     observations=obs,
-                    observations_unflatten=obs_unflatten,
-                    actions=actions,
-                    replaced=replace,
                     next_observations=next_obs,
+                    observations_unflatten=next_obs_unflatten,
+                    actions=actions,
                     rewards=rew,
                     masks=1.0 - done,
                     dones=done,
@@ -58,7 +57,6 @@ if __name__ == "__main__":
             )
             transitions_episode.append(transition)
             obs = next_obs
-            obs_unflatten = next_obs_unflatten
 
             if env.keyboard == "enter":
                 success_count += info['success']
@@ -69,7 +67,8 @@ if __name__ == "__main__":
                 env_unwrapped.goal_rot = transition["observations_unflatten"]["state"]["block_rot"]
                 for transition in transitions_episode:
                     transition["rewards"] = env_unwrapped._get_reward(transition["observations_unflatten"], 
-                                                    np.concatenate(([0, 0, 0.3, -1.5707, 1.5707, 0], transition["actions"])))
+                                                    np.concatenate(([0, 0, 0.3, -1.5707, 1.5707, 0], transition["actions"]))
+                                                    )[0]
                     del transition["observations_unflatten"]
                 
                 transitions += transitions_episode
@@ -90,6 +89,8 @@ if __name__ == "__main__":
         actions = np.zeros((6,))
         next_obs, rew, done, truncated, info = env.step(action=actions)
         next_obs_unflatten = env_unwrapped._obs
+        real_time = time.time() - start_time
+        time.sleep(max(0, env.data.time - real_time))
 
     # Save
     uuid = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
