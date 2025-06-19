@@ -28,6 +28,12 @@ register(
             "image_obs": False},
     # kwargs={"config_path": "./configs/dphand_pick_cube_env_cfg.yaml"},
 )
+
+register(
+    id="DphandFrankaFloatCube-v0",
+    entry_point="franka_sim.envs:DphandFrankaFloatCubeEnv",
+)
+
 register(
     id="DphandPickCubeVision-v0",
     entry_point="franka_sim.envs:DphandPickCubeGymEnv",
