@@ -1,7 +1,32 @@
 from gymnasium.envs.mujoco.mujoco_rendering import MujocoRenderer, WindowViewer, OffScreenViewer
-from typing import Optional, Dict
+from typing import Optional, Dict, Literal
 import mujoco
 import numpy as np
+
+class OSViewer(OffScreenViewer):
+    def __init__(
+        self,
+        model: "mujoco.MjModel",
+        data: "mujoco.MjData",
+        img_obs_width: Optional[int] = 128,
+        img_obs_height: Optional[int] = 128,
+        max_geom: int = 1000,
+        visual_options: Dict[int, bool] = {},
+    ):
+        super().__init__(model=model, 
+                         data=data, 
+                         width=img_obs_width, 
+                         height=img_obs_height, 
+                         max_geom=max_geom, 
+                         visual_options=visual_options)
+
+    def render_rgb_cam(
+        self,
+        render_mode: Optional[Literal["rgb_array", "depth_array", "rgbd_tuple"]] = None,
+        camera_id: Optional[int] = None,
+        segmentation: bool = False
+    ):
+        return super().render(render_mode=render_mode,camera_id=camera_id,segmentation=segmentation)
 
 
 class Viewer(WindowViewer):

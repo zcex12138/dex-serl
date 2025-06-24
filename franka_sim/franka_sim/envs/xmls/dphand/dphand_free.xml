@@ -89,7 +89,7 @@
             <joint class="FACtrl_rpy" name="base_yaw" axis="0 0 1" range="-3.14 3.14"/>
 
             <body name="Forearm" pos="0.0 0.0 0.0" euler="-1.5707963267948963 4.383594686699829e-16 3.1415926535897922">
-                <geom class="plastic" name="Forearm_geom" type="mesh" mesh="Forearm" pos="0 0 0" euler="0 0 0" material="transparent_black"/>
+                <geom class="plastic" name="Forearm_geom" type="mesh" mesh="Forearm" pos="0 0 0" euler="0 0 0" material="transparent_black" contype="0" conaffinity="0"/>
                 <inertial mass="1.9453304463125118" pos="-2.6615378024531148e-08 0.009019289013986305 0.0032088635623812897" fullinertia="0.009066690743886285 0.002094541290341062 0.00960327727265748 -6.786222020669816e-09 -1.1843581789473546e-09 8.685478979449512e-05" />
                 
                 <body name="Wrist" pos="-5.329070518200751e-17 0.13654999999999984 -1.7763568394002505e-17" euler="-3.141592653589793 7.41212194690677e-32 -3.141592653589793">

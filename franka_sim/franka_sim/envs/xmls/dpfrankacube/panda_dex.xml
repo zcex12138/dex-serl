@@ -504,7 +504,7 @@
     <framequat name="tcp_quat" objtype="site" objname="attachment_site"/>
 
     <framelinvel name="tcp_linvel" objtype="site" objname="attachment_site"/>
-    <framequat name="tcp_angvel" objtype="site" objname="attachment_site"/>
+    <frameangvel name="tcp_angvel" objtype="site" objname="attachment_site"/>
     
 
     <!-- 灵巧手 -->

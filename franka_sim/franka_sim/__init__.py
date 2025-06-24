@@ -4,8 +4,7 @@ __all__ = [
     "MujocoGymEnv",
     "GymRenderingSpec",
 ]
-
-from gym.envs.registration import register
+from gymnasium.envs.registration import register  # type: ignore[import-untyped]
 import pathlib
 
 CUR_PATH = pathlib.Path(__file__).parent
@@ -32,6 +31,7 @@ register(
 register(
     id="DphandFrankaFloatCube-v0",
     entry_point="franka_sim.envs:DphandFrankaFloatCubeEnv",
+    kwargs={"config_path": CUR_PATH / "./envs/configs/dphand_franka_float_cube_env_cfg.yaml"},
 )
 
 register(
@@ -39,12 +39,5 @@ register(
     entry_point="franka_sim.envs:DphandPickCubeGymEnv",
     kwargs={"config_path": CUR_PATH / "./envs/configs/dphand_pick_cube_env_cfg.yaml",
             "image_obs": True},
-    # kwargs={"config_path": "./configs/dphand_pick_cube_env_cfg.yaml"},
-)
-register(
-    id="DphandPickCubeVisionTest-v0",
-    entry_point="franka_sim.envs:DphandPickCubeGymEnvTest",
-    kwargs={"config_path": CUR_PATH / "./envs/configs/dphand_pick_cube_env_cfg.yaml",
-            "image_obs": False}
     # kwargs={"config_path": "./configs/dphand_pick_cube_env_cfg.yaml"},
 )

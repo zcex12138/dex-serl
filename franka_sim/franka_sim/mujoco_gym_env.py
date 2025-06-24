@@ -2,10 +2,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, Optional
 
-import gym
-import gym.envs
-import gym.envs.mujoco
-import gym.envs.mujoco.mujoco_env
+import gymnasium as gym
 import mujoco
 import numpy as np
 
@@ -84,7 +81,8 @@ class MujocoGymEnv(gym.Env):
     def random_state(self) -> np.random.RandomState:
         return self._random
 
-class MujocoGymEnv_v2(gym.envs.mujoco.mujoco_env.MujocoEnv):
+from gymnasium.envs.mujoco.mujoco_env import MujocoEnv
+class MujocoGymEnv_v2(MujocoEnv):
     """MujocoEnv with gym interface."""
 
     def __init__(

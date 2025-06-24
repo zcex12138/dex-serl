@@ -97,7 +97,7 @@ def opspace(
         else:
             quat_des = ori
     if joint is None:
-        print("joint is none")
+        # print("joint is none")
         q_des = data.qpos[dof_ids]
     else:
         q_des = np.asarray(joint)

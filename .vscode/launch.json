@@ -62,7 +62,74 @@
                 "--env", "DphandPickCube-v0",
                 "--seed", "0",
                 "--eval_n_trajs", "100",
-                "--checkpoint_path", "/home/yhx/workspace/serl/examples/async_sac_state_sim_dphand/checkpoints/latest/",
+                "--checkpoint_path", "/home/yhx/workspace/serl/examples/async_sac_state_sim_dphand/checkpoints/",
+                "--debug"
+            ],
+            "env": {
+                "XLA_PYTHON_CLIENT_PREALLOCATE": "false",
+                "XLA_PYTHON_CLIENT_MEM_FRACTION": ".05",
+            },
+        },
+
+        {
+            "name": "actor-2",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/async_sac_state_sim_dparm_float/async_sac_state_sim_float.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--actor",
+                "--render",
+                "--image_obs", "True",
+                "--env", "DphandFrankaFloatCube-v0",
+                "--exp_name=serl_dev_sim_test",
+                "--seed", "0",
+                "--random_steps", "1000",
+                "--debug"
+            ],
+            "env": {
+                "XLA_PYTHON_CLIENT_PREALLOCATE": "false",
+                "XLA_PYTHON_CLIENT_MEM_FRACTION": ".5",
+            },
+        },
+        {
+            "name": "learner-2",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/async_sac_state_sim_dparm_float/async_sac_state_sim_float.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--learner",
+                "--env", "DphandFrankaFloatCube-v0",
+                "--exp_name=serl_dev_sim_test",
+                "--seed", "0",
+                "--training_starts", "1000",
+                "--critic_actor_ratio", "8",
+                "--batch_size", "64",
+                "--image_obs", "True",
+                "--checkpoint_period", "50000",
+                "--checkpoint_path", "/home/yhx/workspace/serl/examples/async_sac_state_sim_dparm_float/checkpoints/",
+                "--debug" // wandb is disabled when debug
+            ],
+            "env": {
+                "XLA_PYTHON_CLIENT_PREALLOCATE": "false",
+                "XLA_PYTHON_CLIENT_MEM_FRACTION": ".5",
+            },
+        },
+
+        {
+            "name": "player-2",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/async_sac_state_sim_dparm_float/async_sac_state_sim_float.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--player",
+                "--render",
+                "--env", "DphandFrankaFloatCube-v0",
+                "--seed", "0",
+                "--eval_n_trajs", "100",
+                "--checkpoint_path", "/home/yhx/workspace/serl/examples/async_sac_state_sim_dparm_float/checkpoints/",
                 "--debug"
             ],
             "env": {

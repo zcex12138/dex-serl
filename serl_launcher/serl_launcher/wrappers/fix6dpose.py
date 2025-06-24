@@ -1,8 +1,4 @@
-import gym
-import gym.envs
-import gym.envs.mujoco
-import gym.envs.mujoco.mujoco_env
-import gym.spaces
+import gymnasium as gym
 import numpy as np
 
 class Fix6DPoseWrapper(gym.ActionWrapper):

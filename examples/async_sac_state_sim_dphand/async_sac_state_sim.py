@@ -4,7 +4,7 @@ import time, os
 from functools import partial
 from typing import Any, Dict, Optional
 
-import gym
+import gymnasium as gym
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -22,7 +22,6 @@ from serl_launcher.utils.launcher import (
     make_replay_buffer,
 )
 
-from gym.wrappers.record_episode_statistics import RecordEpisodeStatistics
 from serl_launcher.wrappers.fix6dpose import Fix6DPoseWrapper
 from serl_launcher.agents.continuous.sac import SACAgent
 from serl_launcher.common.evaluation import evaluate
@@ -52,8 +51,6 @@ flags.DEFINE_integer("training_starts", 300, "Training starts after this step.")
 flags.DEFINE_integer("steps_per_update", 30, "Number of steps per update the server.")
 
 flags.DEFINE_integer("log_period", 10, "Logging period.")
-flags.DEFINE_integer("eval_period", 2000, "Evaluation period.")
-# flags.DEFINE_integer("eval_n_trajs", 5, "Number of trajectories for evaluation.")
 
 # flag to indicate if this is a leaner or a actor
 flags.DEFINE_boolean("learner", False, "Is this a learner or a trainer.")
@@ -67,9 +64,7 @@ flags.DEFINE_integer("utd_ratio", 1, "UTD ratio for SAC.")
 
 flags.DEFINE_integer("eval_n_trajs", 5, "Number of trajectories for evaluation.")
 
-flags.DEFINE_boolean(
-    "debug", False, "Debug mode."
-)  # debug mode will disable wandb logging
+flags.DEFINE_boolean("debug", False, "Debug mode.")  # debug mode will disable wandb logging
 
 flags.DEFINE_string("demo_path", None, "Path to the demo data.")
 flags.DEFINE_string("log_rlds_path", None, "Path to save RLDS logs.")
@@ -104,13 +99,6 @@ def actor(agent: SACAgent, data_store, env, sampling_rng):
         agent = agent.replace(state=agent.state.replace(params=params))
 
     client.recv_network_callback(update_params)
-
-    eval_env = gym.make(FLAGS.env)
-    if FLAGS.env == "DphandPickCube-v0":
-        eval_env = gym.wrappers.FlattenObservation(
-            Fix6DPoseWrapper(eval_env, pose=[0, 0, 0.3, -1.5707, 1.5707, 0])
-        )
-    eval_env = RecordEpisodeStatistics(eval_env)
 
     obs, _ = env.reset()
     done = False
@@ -163,16 +151,6 @@ def actor(agent: SACAgent, data_store, env, sampling_rng):
 
         if step % FLAGS.steps_per_update == 0:
             client.update()
-
-        if step % FLAGS.eval_period == 0:
-            with timer.context("eval"):
-                evaluate_info = evaluate(
-                    policy_fn=partial(agent.sample_actions, argmax=True),
-                    env=eval_env,
-                    num_episodes=FLAGS.eval_n_trajs,
-                )
-            stats = {"eval": evaluate_info}
-            client.request("send-stats", stats)
 
         timer.tock("total")
 
@@ -257,6 +235,7 @@ def learner(
 
     # wait till the replay buffer is filled with enough data
     timer = Timer()
+    timestamp = time.strftime("%Y-%m%d-%H-%M-%S")
 
     # show replay buffer progress bar during training
     pbar = tqdm.tqdm(
@@ -298,8 +277,11 @@ def learner(
 
         if FLAGS.checkpoint_period and update_steps % FLAGS.checkpoint_period == 0:
             assert FLAGS.checkpoint_path is not None
+            save_path = os.path.join(
+                FLAGS.checkpoint_path + f"/{timestamp}" + f"/checkpoint_{update_steps}"
+            )
             checkpoints.save_checkpoint(
-                FLAGS.checkpoint_path, agent.state, step=update_steps, keep=5
+                save_path, agent.state, step=update_steps, keep=5
             )
 
         pbar.update(len(replay_buffer) - pbar.n)  # update replay buffer bar
@@ -315,7 +297,7 @@ def player(agent: SACAgent, env, sampling_rng):
     time_list = []
 
     ckpt = checkpoints.restore_checkpoint(
-        FLAGS.checkpoint_path, agent.state, step=None
+        FLAGS.checkpoint_path + "latest/", agent.state, step=None
     )
 
     agent = agent.replace(state=ckpt)
@@ -335,6 +317,7 @@ def player(agent: SACAgent, env, sampling_rng):
             actions = np.asarray(jax.device_get(actions))
 
             next_obs, reward, done, truncated, info = env.step(actions)
+            env.render()
             obs = next_obs
             real_time = time.time() - start_time
             time.sleep(max(0, env.data.time - real_time))
@@ -359,6 +342,7 @@ def main(_):
     assert FLAGS.batch_size % num_devices == 0
     # seed
     rng = jax.random.PRNGKey(FLAGS.seed)
+    rng, sampling_rng = jax.random.split(rng)
     print(FLAGS.render)
     # create env and load dataset
     if FLAGS.render:
@@ -371,7 +355,6 @@ def main(_):
             Fix6DPoseWrapper(env, pose=[0, 0, 0.3, -1.5707, 1.5707, 0])
         )
 
-    rng, sampling_rng = jax.random.split(rng)
     agent: SACAgent = make_sac_agent(
         seed=FLAGS.seed,
         sample_obs=env.observation_space.sample(),
@@ -438,7 +421,7 @@ def main(_):
             sampling_rng,
             agent,
             replay_buffer,
-            demo_buffer=demo_buffer,  # None if no demo data is provided
+            demo_buffer,  # None if no demo data is provided
         )
 
     elif FLAGS.actor:

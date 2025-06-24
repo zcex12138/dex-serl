@@ -1,5 +1,5 @@
-import gym
-from gym.spaces import flatten_space, flatten
+import gymnasium as gym
+from gymnasium.spaces import flatten_space, flatten
 
 
 class SERLObsWrapper(gym.ObservationWrapper):
