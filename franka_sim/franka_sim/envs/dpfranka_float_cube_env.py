@@ -11,74 +11,48 @@ import yaml
 
 # from mujoco import mjx
 from franka_sim.controllers import opspace
-from franka_sim.mujoco_gym_env import MujocoGymEnv, GymRenderingSpec
-from gymnasium.envs.mujoco.mujoco_rendering import MujocoRenderer
+from franka_sim.mujoco_gym_env import GymRenderingSpec, MujocoGymEnv
 
-import queue
-import threading
-from collections import OrderedDict
-import cv2
 
 _HERE = Path(__file__).parent
 _XML_PATH = _HERE / "xmls" / "dpfrankacube" /"dphand_franka_arena.xml"
 
-from franka_sim.envs.render import OSViewer, Viewer
-
 class DphandFrankaFloatCubeEnv(MujocoGymEnv):
-    metadata = {"render_modes": ["human", "rgb_array", "depth_array"], "render_fps": 33}
-
     def __init__(
             self, 
             config_path: str,
+            seed: int = 0,
             action_scale: np.ndarray = np.asarray([0.1, 1]),
             render_spec: GymRenderingSpec = GymRenderingSpec(),
             render_mode: Literal["human", "rgb_array", "depth_array"] = "rgb_array",
             image_obs: bool = False,
-            seed: int = 0,
             ):
+
+        # config
+        with open(config_path, "r") as f:
+            self.cfg = yaml.safe_load(f)
+
         super().__init__(
             xml_path=_XML_PATH,
             seed = seed,
             control_dt=0.02,
             physics_dt=0.002,
             time_limit=10.0,
+            render_spec=render_spec,
+            render_mode=render_mode
             )
         
-        self.render_mode = render_mode
         self.image_obs = image_obs
-
-        # config
-        with open(config_path, "r") as f:
-            self.cfg = yaml.safe_load(f)
 
         self.block_id = self.data.body('block').id
         self.target_id = self.data.body('target').id
-
-        # Viewer
-        if self.render_mode == "human":
-            self._viewer = Viewer( # 交互式渲染
-                self.model,
-                self.data,
-                width=render_spec.viewer_width,
-                height=render_spec.viewer_height,
-                img_obs_width=render_spec.width,
-                img_obs_height=render_spec.height,
-                )
-        # OffScreenViewer
-        elif self.render_mode == "rgb_array":
-            self._viewer = OSViewer( # 离屏渲染
-                self.model,
-                self.data,
-                img_obs_width=render_spec.width,
-                img_obs_height=render_spec.height,
-            )
 
         # store last state
         self._obs = None
         self._rew = None
         self._action = None
-
         self._action_scale = action_scale
+
         # 观测空间包括proprioception, image*2, touch(待加入)
         self.observation_space = spaces.Dict({
             'state': spaces.Dict({
@@ -120,12 +94,12 @@ class DphandFrankaFloatCubeEnv(MujocoGymEnv):
 
         # Caching.
         self._panda_dof_ids = np.asarray(
-            [self._model.joint(f"joint{i}").id for i in range(1, 8)]
+            [self.model.joint(f"joint{i}").id for i in range(1, 8)]
         )
         self._panda_ctrl_ids = np.asarray(
-            [self._model.actuator(f"actuator{i}").id for i in range(1, 8)]
+            [self.model.actuator(f"actuator{i}").id for i in range(1, 8)]
         )
-        self._pinch_site_id = self._model.site("attachment_site").id
+        self._pinch_site_id = self.model.site("attachment_site").id
         
         _dphand_ctrl_ids = []
         for sensor_id in range(self.model.nsensor):
@@ -172,7 +146,7 @@ class DphandFrankaFloatCubeEnv(MujocoGymEnv):
         # franka 关节指令的发布
         # 从tcp pos，计算7维度的关节力指令：
         tau = opspace(
-            model=self._model,
+            model=self.model,
             data=self.data,
             joint=None,
             site_id=self._pinch_site_id,
@@ -197,7 +171,6 @@ class DphandFrankaFloatCubeEnv(MujocoGymEnv):
         self._rew = self._compute_reward(0.01, 0.2)
         if self._rew != 0:
             terminated = True
-            self.reset()
             # print("sucess, reset")
 
         # 若逃逸则重置
@@ -286,16 +259,6 @@ class DphandFrankaFloatCubeEnv(MujocoGymEnv):
     
         return self._obs, {}
 
-    def render(self):
-        if self.render_mode == "human":
-            self._viewer.render()
-        elif self.render_mode == "rgb_array":
-            return self._viewer.render_rgb_cam("rgb_array", -1)
-    
-    def close(self):
-        self._viewer.close()
-        self._viewer = None
-
 
 if __name__ == "__main__":
     import franka_sim
@@ -303,7 +266,8 @@ if __name__ == "__main__":
     env = gym.wrappers.FlattenObservation(env)
     env_unwrapped = env.unwrapped
     env.reset()
-    # i = 0
+
+    import cv2
 
     while True:
         obs, _, done, trucated, _ = env.step(

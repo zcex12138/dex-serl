@@ -1,10 +1,9 @@
 from pathlib import Path
 from typing import Any, Literal, Tuple, Dict
 
-import gym
+import gymnasium as gym
 import mujoco
 import numpy as np
-from gym import spaces
 
 try:
     import mujoco_py

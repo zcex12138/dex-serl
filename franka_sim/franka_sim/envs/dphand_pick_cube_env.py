@@ -17,29 +17,27 @@ else:
     MUJOCO_PY_IMPORT_ERROR = None
 
 from franka_sim.controllers import opspace
-from franka_sim.mujoco_gym_env import GymRenderingSpec, MujocoGymEnv_v2
-from franka_sim.envs.render import Viewer, OSViewer
+from franka_sim.mujoco_gym_env import GymRenderingSpec, MujocoGymEnv
 
 _HERE = Path(__file__).parent
 _XML_PATH = _HERE / "xmls" / "dphand" /"dphand_arena.xml"
 
-class DphandPickCubeGymEnv(MujocoGymEnv_v2):
-    metadata = {"render_modes": ["human", "rgb_array", "depth_array"], "render_fps": 100}
+class DphandPickCubeGymEnv(MujocoGymEnv):
 
     def __init__(
         self,
         config_path: str,
         seed: int = 0,
-        control_dt: float = 0.01, # n-substeps = control_dt / physics_dt
+        control_dt: float = 0.02, # n-substeps = control_dt // physics_dt
         physics_dt: float = 0.002, # dt
-        action_scale = 0.1,
-        render_spec: GymRenderingSpec = GymRenderingSpec(),
         render_mode: Literal["rgb_array", "human"] = "rgb_array",
         image_obs: bool = False,
+        render_spec: GymRenderingSpec = GymRenderingSpec(),
     ):
         # config
         with open(config_path, "r") as f:
             self.cfg = yaml.safe_load(f)
+
 
         super().__init__(
             xml_path=_XML_PATH,
@@ -48,33 +46,14 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
             physics_dt=physics_dt,
             time_limit=self.cfg["reset"]["time_limit"],
             render_spec=render_spec,
+            render_mode=render_mode
         )
 
-        self.render_mode = render_mode
         self.cam_names = ["front", "fixed_cam"]
         self.cam_ids = dict({
             cam_name: self.model.camera(cam_name).id for cam_name in self.cam_names
         })
         self.image_obs = image_obs
-
-        # Viewer
-        if self.render_mode == "human":
-            self._viewer = Viewer( # 交互式渲染
-                self.model,
-                self.data,
-                width=render_spec.viewer_width,
-                height=render_spec.viewer_height,
-                img_obs_width=render_spec.width,
-                img_obs_height=render_spec.height,
-                )
-        # OffScreenViewer
-        elif self.render_mode == "rgb_array":
-            self._viewer = OSViewer( # 离屏渲染
-                self.model,
-                self.data,
-                img_obs_width=render_spec.width,
-                img_obs_height=render_spec.height,
-            )
 
         # store last state
         self._obs = None
@@ -148,7 +127,7 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
             )
 
         self.action_space = self._set_action_space()
-        self.action_scale = action_scale
+        self.action_scale = 0.1
 
 
     def reset(
@@ -201,7 +180,7 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
             info: dict[str, Any]
         """
         action = np.asarray(action, dtype=np.float32) 
-        
+
         if self._action is not None:
             action = np.clip(
             self._action + (action - self._action) * self.action_scale,
@@ -209,7 +188,7 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
             self.action_space.high,
         )
         # physics step
-        for i in range(int(self.control_dt / self.physics_dt)):
+        for i in range(int(self.control_dt // self.physics_dt)):
             self.data.ctrl[self._dphand_ctrl_ids] = action
             mujoco.mj_step(self.model, self.data)
         
@@ -301,16 +280,6 @@ class DphandPickCubeGymEnv(MujocoGymEnv_v2):
         reward += np.where(fall_down, fall_penalty, 0.0)
 
         return reward, terminated, trucated, {'success': success}
-    
-    def render(self):
-        if self.render_mode == "human":
-            self._viewer.render()
-        elif self.render_mode == "rgb_array":
-            return self._viewer.render_rgb_cam("rgb_array", -1)
-    
-    def close(self):
-        self._viewer.close()
-        self._viewer = None
 
 if __name__ == "__main__":
     import franka_sim

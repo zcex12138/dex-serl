@@ -1,7 +1,7 @@
 <mujoco model="Arena">
   <include file="panda_dex.xml"/>
 
-  <option timestep=".003" gravity="0 0 0"/>
+  <option timestep=".002" gravity="0 0 0"/>
 
   <statistic center="0.3 0 0.4" extent=".8"/>
 

@@ -1,9 +1,3 @@
-from franka_sim.mujoco_gym_env import GymRenderingSpec, MujocoGymEnv
-
-__all__ = [
-    "MujocoGymEnv",
-    "GymRenderingSpec",
-]
 from gymnasium.envs.registration import register  # type: ignore[import-untyped]
 import pathlib
 
